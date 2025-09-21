@@ -123,9 +123,18 @@ export default function App() {
     });
     
     // Listener para el CTA móvil
-    const handleScroll = () => {
-        setShowMobileCta(window.scrollY > window.innerHeight * 0.8);
-    };
+  const handleScroll = () => {
+    const scrolledEnough = window.scrollY > window.innerHeight * 0.8;
+    const contactEl = document.getElementById('contact');
+    const nearBottom = window.innerHeight + window.scrollY >= (document.body.scrollHeight - 200);
+    let inContact = false;
+    if (contactEl) {
+      const rect = contactEl.getBoundingClientRect();
+      // si la sección contacto se acerca al viewport
+      inContact = rect.top < window.innerHeight * 0.6;
+    }
+    setShowMobileCta(scrolledEnough && !inContact && !nearBottom && !menuOpen);
+  };
     window.addEventListener('scroll', handleScroll);
 
     return () => {
@@ -135,7 +144,7 @@ export default function App() {
         });
         window.removeEventListener('scroll', handleScroll);
     };
-  }, [sections]);
+  }, [sections, menuOpen]);
 
   const handleNavClick = (e, targetId) => {
 
@@ -258,14 +267,14 @@ export default function App() {
           <div className={`md:hidden ${menuOpen ? '' : 'pointer-events-none'}`}>
             {/* Scrim */}
             <div
-              className={`fixed inset-0 z-40 bg-black/50 transition-opacity ${menuOpen ? 'opacity-100' : 'opacity-0'}`}
+              className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity ${menuOpen ? 'opacity-100' : 'opacity-0'}`}
               onClick={() => setMenuOpen(false)}
               aria-hidden="true"
             />
             {/* Drawer */}
             <aside
               id="mobile-menu"
-              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-black/90 backdrop-blur-xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-[#0b0b0f]/95 backdrop-blur-2xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
               role="dialog"
               aria-modal="true"
             >
@@ -367,11 +376,15 @@ export default function App() {
                         />
                     </div>
                 </div>
-                <div className="md:col-span-3">
+        <div className="md:col-span-3">
           <h2 className="mb-4 text-2xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
-          <p className="leading-relaxed text-white/90 text-sm md:text-base">
-                        Coach ontológico y terapeuta holístico con más de 10 años acompañando procesos de transformación. Integro prácticas energéticas con un enfoque claro y práctico para que puedas <span className="font-semibold">sentirte mejor y avanzar</span> en lo que te importa.
-                    </p>
+          <div className="leading-relaxed text-white/90 text-sm md:text-base space-y-4">
+            <p>Soy Guido Di Pietro, Terapeuta holístico y Coach Ontológico, con más de 10 años acompañando a personas en procesos de transformación profunda.</p>
+            <p>Creo en la fuerza del encuentro humano, en el poder de la palabra, la energía y la intención para abrir caminos hacia una vida más plena y consciente.</p>
+            <p>Desde mi infancia, mis padres, grandes maestros, me enseñaron el amor por lo sutil y lo invisible, guiándome en prácticas como Reiki, Registros Akáshicos y diversos talleres de técnicas de armonización. Esa semilla despertó en mí la vocación de servicio que hoy me mueve.</p>
+            <p>En paralelo, desarrollé mi carrera en diseño gráfico, programación y tecnología, integrando creatividad y visión moderna con canales ancestrales como la gemoterapia, la radiestesia y la geometría sagrada. Considero que la verdadera sanación surge cuando logramos unir lo antiguo con lo nuevo, lo espiritual con lo cotidiano, lo personal con lo universal para sortear esos obstáculos que nos impiden conectarnos.</p>
+            <p>Mi propósito es ser puente y acompaño a quienes buscan claridad, alivio y expansión, brindando un espacio seguro, amoroso y transformador.</p>
+          </div>
                     <ul className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
                         <BenefitItem icon="hands" text="Acompañamiento humano, sin juicios" />
                         <BenefitItem icon="chat" text="Lenguaje simple, cero tecnicismos" />
@@ -422,25 +435,34 @@ export default function App() {
         </main>
         
         <footer className="border-t border-white/10 text-white/80">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row">
-            <div className="flex items-center gap-2">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 overflow-hidden">
+            <div className="flex min-w-0 items-center gap-2">
               <Logo accent={palette.accent} small />
-              <span className="text-sm">© {new Date().getFullYear()} Coaching Cuántico — Guido Di Pietro</span>
+              <span className="text-xs whitespace-nowrap truncate">
+                <span className="hidden sm:inline">© {new Date().getFullYear()} Coaching Cuántico — Guido Di Pietro</span>
+                <span className="sm:hidden">© {new Date().getFullYear()} Coaching Cuántico — G. Di Pietro</span>
+              </span>
             </div>
-            <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="text-sm transition hover:text-white">Volver arriba</a>
+            <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="text-xs transition hover:text-white shrink-0">
+              <span className="hidden sm:inline">Volver arriba</span>
+              <span className="sm:hidden">Arriba</span>
+            </a>
           </div>
         </footer>
 
-        {/* CTA Flotante para Móvil */}
-        <div className={`fixed bottom-4 right-4 z-50 md:hidden transition-all duration-500 ${showMobileCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        {/* CTA Flotante para Móvil (más discreto y seguro) */}
+        <div
+          className={`fixed right-4 z-50 md:hidden transition-all duration-500 pointer-events-none ${showMobileCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 18px)' }}
+        >
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, 'contact')}
-              className="rounded-full p-4 font-semibold shadow-lg"
-              style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
+              className="pointer-events-auto rounded-full p-2.5 text-black shadow-lg shadow-black/40 ring-1 ring-black/10"
+              style={{ background: palette.accent }}
               aria-label="Agendar una sesión"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
             </a>
         </div>
       </div>
