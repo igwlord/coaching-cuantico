@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Flor de la Vida">
+  <title>Flor de la Vida</title>
+  <desc>Ícono favicon con el patrón de la Flor de la Vida en trazo dorado.</desc>
+  <!-- Colors -->
+  <defs>
+    <style>
+      .gold{stroke:#c9a147;fill:none;stroke-width:20;stroke-linecap:round;stroke-linejoin:round}
+      .ring{stroke:#c9a147;fill:none;stroke-width:22}
+    </style>
+  </defs>
+
+  <!-- Outer guiding circle ring so the icon reads on light/dark tabs -->
+  <circle class="ring" cx="256" cy="256" r="230"/>
+
+  <!-- Flower of Life: 7 circles (1 center + 6 hex surrounding), radius = 128 -->
+  <!-- Center -->
+  <circle class="gold" cx="256" cy="256" r="128"/>
+  <!-- Right / Left -->
+  <circle class="gold" cx="384" cy="256" r="128"/>
+  <circle class="gold" cx="128" cy="256" r="128"/>
+  <!-- Top / Bottom -->
+  <circle class="gold" cx="256" cy="128" r="128"/>
+  <circle class="gold" cx="256" cy="384" r="128"/>
+  <!-- Diagonals (60°) -->
+  <circle class="gold" cx="320" cy="144" r="128"/>
+  <circle class="gold" cx="192" cy="144" r="128"/>
+  <circle class="gold" cx="320" cy="368" r="128"/>
+  <circle class="gold" cx="192" cy="368" r="128"/>
+</svg>
