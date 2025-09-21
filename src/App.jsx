@@ -606,10 +606,8 @@ export default function App() {
           <section id="contact" className="relative border-t border-white/10 py-20">
             <div className="mx-auto grid max-w-5xl items-start gap-10 px-4 lg:grid-cols-2">
               <AnimatedSection>
-                <h2 className="mb-2 text-2xl font-bold md:text-4xl">Agendar una sesión</h2>
-                <p className="text-white/90">
-                  Completa tus datos y se abrirá WhatsApp con un mensaje prellenado para confirmar tu turno.
-                </p>
+                <h2 className="mb-2 text-2xl font-bold md:text-4xl">Contacto</h2>
+                <p className="text-white/90 mb-4">¿Tienes preguntas sobre este proceso de armonización? ¿Quieres agendar una sesión? Envíame un mensaje por WhatsApp</p>
                 <ContactForm accent={palette.accent} />
               </AnimatedSection>
               <AnimatedSection>
@@ -961,7 +959,7 @@ function Badge({ accent, children }) {
 }
 
 function ContactForm({ accent }) {
-    const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '', mode: 'consulta' });
     const [errors, setErrors] = useState({});
 
     const validate = () => {
@@ -977,7 +975,7 @@ function ContactForm({ accent }) {
     };
     
     const handleChange = (e) => {
-        const { id, value } = e.target;
+      const { id, value } = e.target;
         setForm(prev => ({ ...prev, [id]: value }));
         if (errors[id]) {
            validate();
@@ -988,22 +986,32 @@ function ContactForm({ accent }) {
         validate();
     };
 
-    const whatsappLink = useMemo(() => {
-        const base = "https://wa.me/5491125124207";
-        const text = encodeURIComponent(
-            `Hola Guido, quiero agendar una sesión de Coaching Cuántico.\n\n` +
-            `Nombre completo: ${form.name}\n` +
-            `Correo: ${form.email}\n` +
-            `Mensaje: ${form.message}\n` +
-            `\nEnviado desde la web.`
-        );
-        return `${base}?text=${text}`;
-    }, [form]);
+  const whatsappLink = useMemo(() => {
+    const base = "https://wa.me/5491125124207";
+        const encabezado = form.mode === 'sesion'
+          ? 'Hola Guido, quiero agendar una sesión de Coaching Cuántico.'
+          : 'Hola Guido, tengo una consulta sobre este proceso.';
+    const text = encodeURIComponent(
+      `${encabezado}\n\n` +
+      `Nombre completo: ${form.name}\n` +
+      `Correo: ${form.email}\n` +
+      `Mensaje: ${form.message}\n` +
+      `\nEnviado desde la web.`
+    );
+    return `${base}?text=${text}`;
+  }, [form]);
 
     const isFormValid = Object.keys(errors).length === 0 && form.name && form.email;
 
     return (
-        <form className="mt-6 grid gap-4" onSubmit={(e) => e.preventDefault()}>
+    <form className="mt-6 grid gap-4" onSubmit={(e) => e.preventDefault()}>
+      <div className="grid gap-1">
+        <label htmlFor="mode" className="text-sm text-white/80">¿Qué querés hacer?</label>
+        <select id="mode" value={form.mode} onChange={handleChange} className="rounded-xl border px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 border-white/15 text-white" style={{ background: '#2A114A' }}>
+          <option value="consulta">Hacer una consulta</option>
+          <option value="sesion">Agendar una sesión</option>
+        </select>
+      </div>
             <div className="grid gap-1">
                 <label htmlFor="name" className="text-sm text-white/80">Nombre completo</label>
                 <input id="name" value={form.name} onChange={handleChange} onBlur={handleBlur} required placeholder="Tu nombre y apellido" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.name ? 'border-red-500/50' : 'border-white/15'}`} />
@@ -1014,10 +1022,10 @@ function ContactForm({ accent }) {
                 <input type="email" id="email" value={form.email} onChange={handleChange} onBlur={handleBlur} required placeholder="tu.correo@email.com" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.email ? 'border-red-500/50' : 'border-white/15'}`} />
                 {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
             </div>
-            <div className="grid gap-1">
-                <label htmlFor="message" className="text-sm text-white/80">Mensaje (opcional)</label>
-                <textarea id="message" value={form.message} onChange={handleChange} rows={3} placeholder="¿Qué te gustaría armonizar?" className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/30" />
-            </div>
+      <div className="grid gap-1">
+        <label htmlFor="message" className="text-sm text-white/80">Mensaje (opcional)</label>
+                <textarea id="message" value={form.message} onChange={handleChange} rows={3} placeholder="Escribe aquí tu mensaje" title="Escribe aquí tu mensaje" className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/30" />
+      </div>
             <div className="flex gap-4">
                 <a 
                     href={isFormValid ? whatsappLink : '#'}
