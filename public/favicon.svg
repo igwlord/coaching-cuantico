@@ -1,29 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Flor de la Vida">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Flor de la Vida">
   <title>Flor de la Vida</title>
-  <desc>Favicon optimizado para tamaños pequeños: fondo oscuro, trazos dorados más gruesos y patrón simplificado (Seed of Life).</desc>
-
-  <defs>
-    <style>
-      .bg{fill:#12122b}
-      .ring{fill:none;stroke:#c9a147;stroke-width:24}
-      .gold{fill:none;stroke:#c9a147;stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
-    </style>
-  </defs>
-
-  <!-- Dark background circle for contrast on any tab theme -->
-  <circle class="bg" cx="256" cy="256" r="248"/>
-  <!-- Outer ring -->
-  <circle class="ring" cx="256" cy="256" r="228"/>
-
-  <!-- Seed of Life (6 circles + 1 central) for clarity at small sizes; radius tuned for overlap -->
-  <!-- Center -->
-  <circle class="gold" cx="256" cy="256" r="120"/>
-  <!-- Hex arrangement around center -->
-  <circle class="gold" cx="376" cy="256" r="120"/>
-  <circle class="gold" cx="136" cy="256" r="120"/>
-  <circle class="gold" cx="316" cy="352" r="120"/>
-  <circle class="gold" cx="196" cy="352" r="120"/>
-  <circle class="gold" cx="316" cy="160" r="120"/>
-  <circle class="gold" cx="196" cy="160" r="120"/>
+  <desc>Favicon con Flor de la Vida exacta (19 círculos) para coincidir con el símbolo del homepage.</desc>
+  <g fill="none" stroke="#CBA135" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 19 circles: hex radius = 2; circle radius R ≈ 31.333; centers computed en malla triangular -->
+    <!-- u=-2 -->
+    <circle cx="37.333" cy="100.000" r="31.333"/>
+    <circle cx="53.000" cy="127.129" r="31.333"/>
+    <circle cx="68.667" cy="154.259" r="31.333"/>
+    <!-- u=-1 -->
+    <circle cx="53.000" cy="72.871" r="31.333"/>
+    <circle cx="68.667" cy="100.000" r="31.333"/>
+    <circle cx="84.333" cy="127.129" r="31.333"/>
+    <circle cx="100.000" cy="154.259" r="31.333"/>
+    <!-- u=0 -->
+    <circle cx="68.667" cy="45.741" r="31.333"/>
+    <circle cx="84.333" cy="72.871" r="31.333"/>
+    <circle cx="100.000" cy="100.000" r="31.333"/>
+    <circle cx="115.667" cy="127.129" r="31.333"/>
+    <circle cx="131.333" cy="154.259" r="31.333"/>
+    <!-- u=1 -->
+    <circle cx="100.000" cy="45.741" r="31.333"/>
+    <circle cx="115.667" cy="72.871" r="31.333"/>
+    <circle cx="131.333" cy="100.000" r="31.333"/>
+    <circle cx="147.000" cy="127.129" r="31.333"/>
+    <!-- u=2 -->
+    <circle cx="131.333" cy="45.741" r="31.333"/>
+    <circle cx="147.000" cy="72.871" r="31.333"/>
+    <circle cx="162.667" cy="100.000" r="31.333"/>
+    <!-- Outer ring enmarca todo el patrón -->
+    <circle cx="100" cy="100" r="94"/>
+  </g>
 </svg>
