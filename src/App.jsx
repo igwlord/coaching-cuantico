@@ -275,7 +275,8 @@ export default function App() {
             {/* Drawer */}
             <aside
               id="mobile-menu"
-              className={`fixed inset-y-0 right-0 z-50 w-72 max-w-[85%] transform bg-black shadow-2xl border-l border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+              className={`fixed inset-y-0 right-0 z-50 w-72 max-w-[85%] transform shadow-2xl border-l border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+              style={{ backgroundColor: '#000000' }}
               role="dialog"
               aria-modal="true"
             >
