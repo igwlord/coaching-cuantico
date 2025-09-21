@@ -267,14 +267,14 @@ export default function App() {
           <div className={`md:hidden ${menuOpen ? '' : 'pointer-events-none'}`}>
             {/* Scrim */}
             <div
-              className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity ${menuOpen ? 'opacity-100' : 'opacity-0'}`}
+              className={`fixed inset-0 z-40 bg-black/75 backdrop-blur-md transition-opacity ${menuOpen ? 'opacity-100' : 'opacity-0'}`}
               onClick={() => setMenuOpen(false)}
               aria-hidden="true"
             />
             {/* Drawer */}
             <aside
               id="mobile-menu"
-              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-[#0b0b0f]/95 backdrop-blur-2xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-[#0b0b0f] shadow-2xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
               role="dialog"
               aria-modal="true"
             >
@@ -298,7 +298,7 @@ export default function App() {
                     key={s.id}
                     href={`#${s.id}`}
                     onClick={(e) => { handleNavClick(e, s.id); setMenuOpen(false); }}
-                    className={`block rounded-md px-3 py-2 text-sm transition ${activeSection === s.id ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                    className={`block rounded-lg px-3 py-2 text-sm transition ring-1 ring-inset ring-white/10 ${activeSection === s.id ? 'bg-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
                   >
                     {s.label}
                   </a>
@@ -307,7 +307,7 @@ export default function App() {
                   <a
                     href="#contact"
                     onClick={(e) => { handleNavClick(e, 'contact'); setMenuOpen(false); }}
-                    className="block rounded-md px-3 py-2 text-sm font-semibold"
+                    className="block rounded-lg px-3 py-2 text-sm font-semibold shadow-md"
                     style={{ background: palette.accent, color: '#0c0c0c', boxShadow: `0 0 18px ${palette.glow}` }}
                   >
                     Agendar sesión
