@@ -221,18 +221,18 @@ export default function App() {
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
     const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      const headerOffset = 70;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
+    const doScroll = () => {
+      if (!targetElement) return;
+      // Usamos scrollIntoView + CSS scroll-margin para compensar el header
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    if (menuOpen) {
+      setMenuOpen(false);
+      // Pequeño delay para evitar jank mientras cierra el drawer en móviles
+      setTimeout(doScroll, 220);
+    } else {
+      doScroll();
     }
-    // Cierra el menú móvil después de navegar
-    if (menuOpen) setMenuOpen(false);
   };
 
   // Bloquea scroll cuando el menú móvil está abierto y cierra con Escape
