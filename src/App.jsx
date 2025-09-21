@@ -113,6 +113,24 @@ export default function App() {
   const openLightbox = (src, alt) => setLightbox({ open: true, src, alt });
   const closeLightbox = () => setLightbox({ open: false, src: '', alt: '' });
 
+  // Ancho de viewport para comportamientos responsivos simples
+  const vw = useViewportWidth();
+
+  // "Leer más" en móviles para la sección "Quién soy"
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const aboutContentRef = useRef(null);
+  const [aboutHeight, setAboutHeight] = useState(0);
+  useEffect(() => {
+    const updateAbout = () => {
+      if (aboutContentRef.current) {
+        setAboutHeight(aboutContentRef.current.scrollHeight);
+      }
+    };
+    updateAbout();
+    window.addEventListener('resize', updateAbout);
+    return () => window.removeEventListener('resize', updateAbout);
+  }, []);
+
   // Medir el alto del contenido del acordeón (para animar max-height)
   useEffect(() => {
     const update = () => {
@@ -309,6 +327,58 @@ export default function App() {
     },
   ];
 
+  // Datos mínimos para Certificaciones: título, descripción breve, imagen y alt
+  const certifications = [
+    {
+      title: 'Coach Ontológico Profesional',
+      desc: 'Formación en herramientas de coaching para acompañamiento y desarrollo personal.',
+      image: null,
+      alt: 'Certificado de Coach Ontológico Profesional',
+    },
+    {
+      title: 'Operador de Mesa Cuántica',
+      desc: 'Trabajo con plataforma cuántica para armonización energética a distancia.',
+      image: '/Certificados/operador mesa cuantica.png',
+      alt: 'Certificado Operador de Mesa Cuántica',
+    },
+    {
+      title: 'Radiestesia Hebrea',
+      desc: 'Uso de péndulo y herramientas hebreas para diagnóstico y armonización.',
+      image: '/Certificados/Radiestesia hebrea.png',
+      alt: 'Certificado Radiestesia Hebrea',
+    },
+    {
+      title: 'Radiestesia Cuántica con Cristales',
+      desc: 'Aplicación de radiestesia y cristales para limpieza y equilibrio de campos energéticos.',
+      image: '/Certificados/Radiestecia cuantica con cristales.png',
+      alt: 'Certificado Radiestesia Cuántica con Cristales',
+    },
+    {
+      title: 'Operador de Tableros y Símbolos Pleyadianos',
+      desc: 'Protocolos con tableros y símbolos pleyadianos para armonización profunda.',
+      image: '/Certificados/Operador de tableros y simbolos pleyadianos.png',
+      alt: 'Certificado Operador de Tableros y Símbolos Pleyadianos',
+    },
+    {
+      title: 'Reiki Instructor Nivel 3',
+      desc: 'Maestría en Reiki: canalización, enseñanza y guía en la práctica.',
+      image: '/Certificados/Reiki instructor nivel 3.png',
+      alt: 'Certificado Reiki Instructor Nivel 3',
+    },
+    {
+      title: 'Diksha Giver Facilitador',
+      desc: 'Facilitación de Diksha para transmisión de energía de conciencia.',
+      image: '/Certificados/Diksha Giver facilitador.png',
+      alt: 'Certificado Diksha Giver Facilitador',
+    },
+    {
+      title: 'Operador de Cristales y Tameana',
+      desc: 'Técnicas con cristales y Tameana para elevar la vibración y armonizar.',
+      image: '/Certificados/Operador de Cristales y Tameana.png',
+      alt: 'Certificado Operador de Cristales y Tameana',
+    },
+  ];
+
   return (
     <>
       {/* Importación de Fuentes de Google - Se añade aquí como comentario ya que no se puede editar el <head> */}
@@ -450,7 +520,7 @@ export default function App() {
           <section id="intro" className="relative border-t border-white/10 py-20">
             <div className="mx-auto max-w-6xl px-4">
               <AnimatedSection>
-                <h2 className="mb-12 text-center text-2xl font-bold md:text-4xl">
+                <h2 className="section-title mb-12 text-2xl font-bold md:text-4xl">
                   <span className="inline-block">El Proceso de <Glow>Armonización</Glow></span>
                 </h2>
               </AnimatedSection>
@@ -515,15 +585,38 @@ export default function App() {
           </div>
         </div>
         <div className="md:col-span-3">
-          <h2 className="mb-4 text-2xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
-          <div className="leading-relaxed text-white/90 text-sm md:text-base space-y-4">
-            <p>Soy Guido Di Pietro, Terapeuta holístico y Coach Ontológico, con más de 10 años acompañando a personas en procesos de transformación profunda.</p>
-            <p>Creo en la fuerza del encuentro humano, en el poder de la palabra, la energía y la intención para abrir caminos hacia una vida más plena y consciente.</p>
-            <p>Desde mi infancia, mis padres, grandes maestros, me enseñaron el amor por lo sutil y lo invisible, guiándome en prácticas como Reiki, Registros Akáshicos y diversos talleres de técnicas de armonización. Esa semilla despertó en mí la vocación de servicio que hoy me mueve.</p>
-            <p>En paralelo, desarrollé mi carrera en diseño gráfico, programación y tecnología, integrando creatividad y visión moderna con canales ancestrales como la gemoterapia, la radiestesia y la geometría sagrada. Considero que la verdadera sanación surge cuando logramos unir lo antiguo con lo nuevo, lo espiritual con lo cotidiano, lo personal con lo universal para sortear esos obstáculos que nos impiden conectarnos.</p>
-            <p>Mi propósito es ser puente y acompaño a quienes buscan claridad, alivio y expansión, brindando un espacio seguro, amoroso y transformador.</p>
+          <h2 className="section-title mb-4 text-2xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
+          <div className="relative">
+            <div
+              id="about"
+              ref={aboutContentRef}
+              className="leading-relaxed text-white/90 text-sm md:text-base space-y-4 overflow-hidden transition-all duration-300 pb-2"
+              style={{
+                maxHeight: vw < 768 ? (aboutOpen ? aboutHeight : 240) : 'none',
+                WebkitMaskImage: vw < 768 && !aboutOpen ? 'linear-gradient(to bottom, black 78%, transparent)' : undefined,
+                maskImage: vw < 768 && !aboutOpen ? 'linear-gradient(to bottom, black 78%, transparent)' : undefined,
+              }}
+            >
+              <p>Soy Guido Di Pietro, Terapeuta holístico y Coach Ontológico, con más de 10 años acompañando a personas en procesos de transformación profunda.</p>
+              <p>Creo en la fuerza del encuentro humano, en el poder de la palabra, la energía y la intención para abrir caminos hacia una vida más plena y consciente.</p>
+              <p>Desde mi infancia, mis padres, grandes maestros, me enseñaron el amor por lo sutil y lo invisible, guiándome en prácticas como Reiki, Registros Akáshicos y diversos talleres de técnicas de armonización. Esa semilla despertó en mí la vocación de servicio que hoy me mueve.</p>
+              <p>En paralelo, desarrollé mi carrera en diseño gráfico, programación y tecnología, integrando creatividad y visión moderna con canales ancestrales como la gemoterapia, la radiestesia y la geometría sagrada. Considero que la verdadera sanación surge cuando logramos unir lo antiguo con lo nuevo, lo espiritual con lo cotidiano, lo personal con lo universal para sortear esos obstáculos que nos impiden conectarnos.</p>
+              <p>Mi propósito es ser puente y acompaño a quienes buscan claridad, alivio y expansión, brindando un espacio seguro, amoroso y transformador.</p>
+            </div>
+            {/* El degradado ahora se logra con mask-image en el contenedor cuando está contraído */}
           </div>
-                </div>
+          {vw < 768 && (
+            <button
+              type="button"
+              onClick={() => setAboutOpen((v) => !v)}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+              aria-expanded={aboutOpen}
+              aria-controls="about"
+            >
+              {aboutOpen ? 'Leer menos' : 'Leer más'}
+            </button>
+          )}
+        </div>
             </AnimatedSection>
           </section>
 
@@ -531,7 +624,7 @@ export default function App() {
           <section id="certs" className="relative border-t border-white/10 pt-12 pb-16">
             <div className="mx-auto max-w-6xl px-4">
               <AnimatedSection>
-                <h2 className="mb-4 text-2xl font-bold md:text-3xl">
+                <h2 className="section-title mb-4 text-2xl font-bold md:text-3xl">
                   <button
                     type="button"
                     onClick={() => setCertsOpen((v) => !v)}
@@ -554,50 +647,39 @@ export default function App() {
                   className="overflow-hidden transition-all duration-300"
                   style={{ maxHeight: certsOpen ? certsHeight : 0, opacity: certsOpen ? 1 : 0.5 }}
                 >
-                  <div className="mx-auto mb-6 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-white/90 mt-6">
-                    {[
-                      { label: 'Coach Ontologico Profesional', image: null },
-                      { label: 'Operador de Mesa Cuantica', image: '/Certificados/operador mesa cuantica.png' },
-                      { label: 'Radiestesia hebrea', image: '/Certificados/Radiestesia hebrea.png' },
-                      { label: 'Radiestecia cuantica con cristales', image: '/Certificados/Radiestecia cuantica con cristales.png' },
-                      { label: 'Operador de tableros y simbolos pleyadianos', image: '/Certificados/Operador de tableros y simbolos pleyadianos.png' },
-                      { label: 'Reiki instructor nivel 3', image: '/Certificados/Reiki instructor nivel 3.png' },
-                      { label: 'Diksha Giver facilitador', image: '/Certificados/Diksha Giver facilitador.png' },
-                      { label: 'Operador de Cristales y Tameana', image: '/Certificados/Operador de Cristales y Tameana.png' },
-                    ].map((cert, i) => (
-                      <article
-                        key={i}
-                        className="group relative flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 focus-within:bg-white/10 focus-within:ring-2 focus-within:ring-white/20"
-                        tabIndex={0}
-                      >
-                        {cert.image ? (
-                          <button
-                            type="button"
-                            onClick={() => openLightbox(cert.image, `Certificado ${cert.label}`)}
-                            className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 cursor-zoom-in"
-                            aria-label={`Ampliar ${cert.label}`}
-                          >
-                            <img
-                              src={cert.image}
-                              alt={`Certificado ${cert.label}`}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          </button>
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                          </div>
-                        )}
-                        <span className="text-sm md:text-base leading-snug">{cert.label}</span>
+                  <div className="mx-auto mb-6 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-white/90 mt-6">
+                    {certifications.map((c, i) => (
+                      <article key={i} className="group rounded-xl border border-white/10 bg-white/5 overflow-hidden transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-white/20">
+                        <div className="relative aspect-[4/3] bg-black/20">
+                          {c.image ? (
+                            <button
+                              type="button"
+                              onClick={() => openLightbox(c.image, c.alt || `Certificado ${c.title}`)}
+                              className="absolute inset-0 w-full h-full focus:outline-none"
+                              aria-label={`Ampliar ${c.title}`}
+                            >
+                              <img
+                                src={c.image}
+                                alt={c.alt || c.title}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            </button>
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17l4-4 3 3 5-5 3 3"/></svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-base md:text-lg font-semibold text-white">{c.title}</h3>
+                          <p className="mt-1 text-sm text-white/80">{c.desc}</p>
+                        </div>
                       </article>
                     ))}
                   </div>
-                  <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-4 text-white/70">
-                    <Badge accent={palette.accent}>10+ años de experiencia</Badge>
-                    <Badge accent={palette.accent}>Sesiones 100% online</Badge>
-                  </div>
+                  {/* Badges movidos debajo de Preguntas frecuentes */}
                 </div>
               </AnimatedSection>
             </div>
@@ -606,13 +688,13 @@ export default function App() {
           <section id="contact" className="relative border-t border-white/10 py-20">
             <div className="mx-auto grid max-w-5xl items-start gap-10 px-4 lg:grid-cols-2">
               <AnimatedSection>
-                <h2 className="mb-2 text-2xl font-bold md:text-4xl">Contacto</h2>
+                <h2 className="section-title mb-2 text-2xl font-bold md:text-4xl">Contacto</h2>
                 <p className="text-white/90 mb-4">¿Tienes preguntas sobre este proceso de armonización? ¿Quieres agendar una sesión? Envíame un mensaje por WhatsApp</p>
                 <ContactForm accent={palette.accent} />
               </AnimatedSection>
               <AnimatedSection>
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-6 backdrop-blur-xl">
-                  <h3 className="mb-4 text-xl font-semibold">Preguntas frecuentes</h3>
+                  <h3 className="section-title mb-4 text-xl font-semibold">Preguntas frecuentes</h3>
                   <dl className="space-y-4 text-sm text-white/90">
                     <div>
                       <dt className="font-semibold">¿Necesito creer en algo?</dt>
@@ -628,12 +710,16 @@ export default function App() {
                     </div>
                   </dl>
                 </div>
+                <div className="mt-4 flex items-center justify-center gap-2 flex-nowrap text-white/70 sm:gap-3">
+                  <Badge accent={palette.accent}>10+ años de experiencia</Badge>
+                  <Badge accent={palette.accent}>Sesiones 100% online</Badge>
+                </div>
               </AnimatedSection>
             </div>
             
             <div className="mx-auto max-w-6xl px-4 pt-20">
               <AnimatedSection>
-                <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Lo que dicen las personas</h2>
+                <h2 className="section-title mb-8 text-2xl font-bold md:text-3xl">Lo que dicen las personas</h2>
                 <Carousel items={testimonials} accent={palette.accent} />
               </AnimatedSection>
             </div>
@@ -951,7 +1037,7 @@ function Carousel({ items, accent }) {
 
 function Badge({ accent, children }) {
   return (
-  <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/10 bg-white/5">
+  <span className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-2 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-medium text-white/90 ring-1 ring-white/10 bg-white/5 whitespace-nowrap">
     <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: accent }} />
     {children}
   </span>
