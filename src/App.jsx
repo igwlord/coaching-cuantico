@@ -229,12 +229,22 @@ export default function App() {
         <SacredGeometryOverlay accent={palette.accent} />
         
         <header className="sticky top-0 z-40 border-b border-white/10 bg-black/20 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+          <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-3">
             <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="flex items-center gap-3 transition-transform hover:scale-105">
               <Logo accent={palette.accent} />
               <span className="hidden sm:inline font-semibold tracking-wide">Coaching Cuántico</span>
             </a>
-            {/* Botón hamburguesa (móvil) */}
+            {/* Navegación desktop */}
+            <nav className="hidden md:flex gap-2">
+              {sections.map((s) => (
+                <a key={s.id} href={`#${s.id}`} onClick={(e) => handleNavClick(e, s.id)} 
+                   className={`rounded-md px-3 py-2 text-sm transition-all duration-300 ${activeSection === s.id ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
+                   aria-label={`Ir a ${s.label}`}>
+                  {s.label}
+                </a>
+              ))}
+            </nav>
+            {/* Botón hamburguesa (móvil) a la derecha */}
             <button
               type="button"
               className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
@@ -245,19 +255,10 @@ export default function App() {
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <nav className="hidden md:flex gap-2">
-              {sections.map((s) => (
-                <a key={s.id} href={`#${s.id}`} onClick={(e) => handleNavClick(e, s.id)} 
-                   className={`rounded-md px-3 py-2 text-sm transition-all duration-300 ${activeSection === s.id ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
-                   aria-label={`Ir a ${s.label}`}>
-                  {s.label}
-                </a>
-              ))}
-            </nav>
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, 'contact')}
-              className="rounded-xl px-4 py-2 text-xs font-semibold shadow-[0_0_20px] transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 md:text-sm"
+              className="hidden md:inline-flex rounded-xl px-4 py-2 text-xs font-semibold shadow-[0_0_20px] transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 md:text-sm"
               style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
             >
               Agendar sesión
@@ -274,7 +275,7 @@ export default function App() {
             {/* Drawer */}
             <aside
               id="mobile-menu"
-              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-[#0b0b0f] shadow-2xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+              className={`fixed inset-y-0 right-0 z-50 w-72 max-w-[85%] transform bg-black shadow-2xl border-l border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
               role="dialog"
               aria-modal="true"
             >
