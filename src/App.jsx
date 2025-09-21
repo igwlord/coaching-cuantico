@@ -28,6 +28,35 @@ function useOnScreen(options) {
   return [ref, isVisible];
 }
 
+// Detecta preferencia de reducir animaciones
+function usePrefersReducedMotion() {
+  const [prefers, setPrefers] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = (e) => setPrefers(e.matches);
+    setPrefers(media.matches);
+    if (media.addEventListener) media.addEventListener('change', onChange);
+    else media.addListener(onChange);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener('change', onChange);
+      else media.removeListener(onChange);
+    };
+  }, []);
+  return prefers;
+}
+
+// Ancho del viewport para ajustar densidad visual
+function useViewportWidth() {
+  const [w, setW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  useEffect(() => {
+    const onResize = () => setW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return w;
+}
+
 // Componente para animar la entrada de elementos
 const AnimatedSection = ({ children, className }) => {
   const [ref, isVisible] = useOnScreen({ threshold: 0.1, triggerOnce: true });
@@ -73,6 +102,7 @@ export default function App() {
 
   const [activeSection, setActiveSection] = useState("home");
   const [showMobileCta, setShowMobileCta] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Observer para la navegación activa
   useEffect(() => {
@@ -108,6 +138,20 @@ export default function App() {
   }, [sections]);
 
   const handleNavClick = (e, targetId) => {
+
+  // Bloquea scroll cuando el menú móvil está abierto y cierra con Escape
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
     e.preventDefault();
     const targetElement = document.getElementById(targetId);
     if (targetElement) {
@@ -181,6 +225,17 @@ export default function App() {
               <Logo accent={palette.accent} />
               <span className="hidden sm:inline font-semibold tracking-wide">Coaching Cuántico</span>
             </a>
+            {/* Botón hamburguesa (móvil) */}
+            <button
+              type="button"
+              className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+              aria-label="Abrir menú"
+              aria-controls="mobile-menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
             <nav className="hidden md:flex gap-2">
               {sections.map((s) => (
                 <a key={s.id} href={`#${s.id}`} onClick={(e) => handleNavClick(e, s.id)} 
@@ -199,15 +254,68 @@ export default function App() {
               Agendar sesión
             </a>
           </div>
+          {/* Menú lateral móvil */}
+          <div className={`md:hidden ${menuOpen ? '' : 'pointer-events-none'}`}>
+            {/* Scrim */}
+            <div
+              className={`fixed inset-0 z-40 bg-black/50 transition-opacity ${menuOpen ? 'opacity-100' : 'opacity-0'}`}
+              onClick={() => setMenuOpen(false)}
+              aria-hidden="true"
+            />
+            {/* Drawer */}
+            <aside
+              id="mobile-menu"
+              className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85%] transform bg-black/90 backdrop-blur-xl border-r border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Logo accent={palette.accent} small />
+                  <span className="text-sm font-semibold">Coaching Cuántico</span>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+                  aria-label="Cerrar menú"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <nav className="px-2 py-2">
+                {sections.map((s) => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    onClick={(e) => { handleNavClick(e, s.id); setMenuOpen(false); }}
+                    className={`block rounded-md px-3 py-2 text-sm transition ${activeSection === s.id ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    {s.label}
+                  </a>
+                ))}
+                <div className="mt-2 border-t border-white/10 pt-2">
+                  <a
+                    href="#contact"
+                    onClick={(e) => { handleNavClick(e, 'contact'); setMenuOpen(false); }}
+                    className="block rounded-md px-3 py-2 text-sm font-semibold"
+                    style={{ background: palette.accent, color: '#0c0c0c', boxShadow: `0 0 18px ${palette.glow}` }}
+                  >
+                    Agendar sesión
+                  </a>
+                </div>
+              </nav>
+            </aside>
+          </div>
         </header>
 
         <main>
           <section id="home" className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
             <AnimatedSection className="mx-auto grid max-w-7xl items-center gap-10 px-4 md:grid-cols-2">
               <div>
-                <h1 className="text-4xl font-extrabold leading-tight md:text-6xl">
+                <h1 className="text-3xl font-extrabold leading-tight md:text-6xl">
                   <span className="block">Coaching <Glow>Cuántico</Glow></span>
-                  <span className="mt-4 block text-2xl font-light text-white/80 md:text-3xl">
+                  <span className="mt-4 block text-xl font-light text-white/80 md:text-3xl">
                     Armoniza mente, emoción y energía con un método simple y reproducible.
                   </span>
                 </h1>
@@ -226,7 +334,7 @@ export default function App() {
           <section id="intro" className="relative border-t border-white/10 py-20">
             <div className="mx-auto max-w-6xl px-4">
               <AnimatedSection>
-                <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
+                <h2 className="mb-12 text-center text-2xl font-bold md:text-4xl">
                   <span className="inline-block">El Proceso de <Glow>Armonización</Glow></span>
                 </h2>
               </AnimatedSection>
@@ -240,7 +348,7 @@ export default function App() {
                         </div>
                         <h3 className="text-lg font-semibold text-white">{step.title}</h3>
                       </div>
-                      <p className="mt-4 flex-grow text-white/80">{step.description}</p>
+                      <p className="mt-4 flex-grow text-white/80 text-sm md:text-base">{step.description}</p>
                     </div>
                   </AnimatedSection>
                 ))}
@@ -260,8 +368,8 @@ export default function App() {
                     </div>
                 </div>
                 <div className="md:col-span-3">
-                    <h2 className="mb-4 text-3xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
-                    <p className="leading-relaxed text-white/90">
+          <h2 className="mb-4 text-2xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
+          <p className="leading-relaxed text-white/90 text-sm md:text-base">
                         Coach ontológico y terapeuta holístico con más de 10 años acompañando procesos de transformación. Integro prácticas energéticas con un enfoque claro y práctico para que puedas <span className="font-semibold">sentirte mejor y avanzar</span> en lo que te importa.
                     </p>
                     <ul className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
@@ -277,7 +385,7 @@ export default function App() {
           <section id="contact" className="relative border-t border-white/10 py-20">
             <div className="mx-auto grid max-w-5xl items-start gap-10 px-4 lg:grid-cols-2">
               <AnimatedSection>
-                <h2 className="mb-2 text-3xl font-bold md:text-4xl">Agendar una sesión</h2>
+                <h2 className="mb-2 text-2xl font-bold md:text-4xl">Agendar una sesión</h2>
                 <p className="text-white/90">
                   Completa tus datos y se abrirá WhatsApp con un mensaje prellenado para confirmar tu turno.
                 </p>
@@ -306,7 +414,7 @@ export default function App() {
             
             <div className="mx-auto max-w-6xl px-4 pt-20">
               <AnimatedSection>
-                <h2 className="mb-8 text-center text-3xl font-bold">Lo que dicen las personas</h2>
+                <h2 className="mb-8 text-center text-2xl font-bold md:text-3xl">Lo que dicen las personas</h2>
                 <Carousel items={testimonials} accent={palette.accent} />
               </AnimatedSection>
             </div>
@@ -359,24 +467,28 @@ function Logo({ accent, small = false }) {
 }
 
 function Starfield({ accentColor }) {
-    const [offsetY, setOffsetY] = useState(0);
-    const handleScroll = () => setOffsetY(window.pageYOffset);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const vw = useViewportWidth();
+  const [offsetY, setOffsetY] = useState(0);
+  const handleScroll = () => setOffsetY(window.pageYOffset);
 
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+  useEffect(() => {
+    if (prefersReducedMotion) return; // evita parallax si el usuario prefiere reducir animación
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [prefersReducedMotion]);
 
-    const stars = useMemo(() => {
-        const starColors = [accentColor, '#FFFFFF', '#A855F7']; // Gold, White, Violet
-        return Array.from({ length: 150 }, () => ({
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            delay: Math.random() * 10,
-            duration: Math.random() * 5 + 5, // Slower, more varied pulse
-            color: starColors[Math.floor(Math.random() * starColors.length)]
-        }))
-    }, [accentColor]);
+  const stars = useMemo(() => {
+    const starColors = [accentColor, '#FFFFFF', '#A855F7']; // Gold, White, Violet
+    const count = prefersReducedMotion ? 60 : vw < 640 ? 80 : vw < 1024 ? 120 : 150;
+    return Array.from({ length: count }, () => ({
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      delay: Math.random() * 10,
+      duration: Math.random() * 5 + 5, // pulso más lento y variado
+      color: starColors[Math.floor(Math.random() * starColors.length)]
+    }))
+  }, [accentColor, vw, prefersReducedMotion]);
 
     return (
         <>
@@ -386,7 +498,7 @@ function Starfield({ accentColor }) {
                     100% { opacity: 0.7; }
                 }
             `}</style>
-            <div aria-hidden className="pointer-events-none fixed inset-0 -z-10" style={{ transform: `translateY(${offsetY * 0.2}px)` }}>
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10" style={{ transform: prefersReducedMotion ? undefined : `translateY(${offsetY * 0.2}px)` }}>
                 {stars.map((s, i) => (
                     <span
                         key={i}
@@ -396,9 +508,9 @@ function Starfield({ accentColor }) {
                             left: `${s.left}%`,
                             width: '1px',
                             height: '1px',
-                            backgroundColor: s.color,
-                            animation: `softPulse ${s.duration}s infinite alternate`,
-                            animationDelay: `${s.delay}s`,
+              backgroundColor: s.color,
+              animation: prefersReducedMotion ? undefined : `softPulse ${s.duration}s infinite alternate`,
+              animationDelay: prefersReducedMotion ? undefined : `${s.delay}s`,
                         }}
                     />
                 ))}
