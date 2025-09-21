@@ -89,6 +89,7 @@ export default function App() {
     { id: "home", label: "Inicio" },
     { id: "intro", label: "El Proceso" },
     { id: "about", label: "Quién soy" },
+    { id: "certs", label: "Certificaciones" },
     { id: "contact", label: "Contacto" },
   ];
 
@@ -103,6 +104,59 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Acordeón Certificaciones + Lightbox de diplomas
+  const [certsOpen, setCertsOpen] = useState(false);
+  const certsContentRef = useRef(null);
+  const [certsHeight, setCertsHeight] = useState(0);
+  const [lightbox, setLightbox] = useState({ open: false, src: '', alt: '' });
+  const scrollYRef = useRef(0);
+  const openLightbox = (src, alt) => setLightbox({ open: true, src, alt });
+  const closeLightbox = () => setLightbox({ open: false, src: '', alt: '' });
+
+  // Medir el alto del contenido del acordeón (para animar max-height)
+  useEffect(() => {
+    const update = () => {
+      if (certsContentRef.current) {
+        setCertsHeight(certsContentRef.current.scrollHeight);
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Cerrar lightbox con Escape y bloquear scroll de fondo
+  useEffect(() => {
+    if (!lightbox.open) return;
+    const onKey = (e) => { if (e.key === 'Escape') closeLightbox(); };
+    window.addEventListener('keydown', onKey);
+
+    // Fijar la pantalla en la posición actual (mejor que overflow hidden en móviles)
+    const body = document.body;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      overflow: body.style.overflow,
+    };
+    scrollYRef.current = window.scrollY || window.pageYOffset;
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollYRef.current}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.overflow = prev.overflow;
+      window.scrollTo(0, scrollYRef.current);
+    };
+  }, [lightbox.open]);
 
   // Observer para la navegación activa
   useEffect(() => {
@@ -147,6 +201,21 @@ export default function App() {
   }, [sections, menuOpen]);
 
   const handleNavClick = (e, targetId) => {
+    e.preventDefault();
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      const headerOffset = 70;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    // Cierra el menú móvil después de navegar
+    if (menuOpen) setMenuOpen(false);
+  };
 
   // Bloquea scroll cuando el menú móvil está abierto y cierra con Escape
   useEffect(() => {
@@ -161,19 +230,6 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [menuOpen]);
-    e.preventDefault();
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      const headerOffset = 70;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
-  };
 
   const processSteps = [
     {
@@ -203,9 +259,54 @@ export default function App() {
   ];
   
   const testimonials = [
-    { name: "Sofía R.", type: "Armonización Cuántica", text: "Sentí alivio inmediato y una claridad mental que no tenía hace meses. El proceso es simple y potente." },
-    { name: "Mariano L.", type: "Plataforma Tameana", text: "Dormí mejor toda la semana y pude destrabar conversaciones difíciles en el trabajo sin tensión." },
-    { name: "Camila P.", type: "Cristales Sanadores", text: "Mi ansiedad bajó notablemente. Gui explica con calidez y sin tecnicismos. Muy recomendable." },
+    {
+      name: "Claudia S.",
+      type: "Armonización Cuántica",
+      text: "Me sentía agotada y sin motivación. Después de la sesión recuperé energía y vitalidad, como si hubiera vuelto a conectar con mi fuerza interior.",
+      avatar: null,
+    },
+    {
+      name: "Fernando T.",
+      type: "Armonización Cuántica",
+      text: "Lo que más me sorprendió fue la sensación de liviandad. Entré con mucha tensión y salí con el cuerpo suelto, respirando con más libertad.",
+      avatar: null,
+    },
+    {
+      name: "Julia M.",
+      type: "Armonización Cuántica",
+      text: "Fue un momento de conexión muy especial. Sentí que podía soltar cargas emocionales que llevaba guardadas hace años.",
+      avatar: null,
+    },
+    {
+      name: "Alejandro P.",
+      type: "Armonización Cuántica",
+      text: "La armonización me ayudó a enfocar mi mente. Ahora puedo trabajar con más concentración y sin tanto estrés.",
+      avatar: null,
+    },
+    {
+      name: "Mariana R.",
+      type: "Armonización Cuántica",
+      text: "Llegué con mucha ansiedad y pensamientos repetitivos. Después de la armonización, sentí una calma profunda, como si mi mente se hubiera ordenado. Ahora puedo tomar decisiones con más claridad.",
+      avatar: null,
+    },
+    {
+      name: "Esteban L.",
+      type: "Armonización Cuántica",
+      text: "Tenía dolores de espalda constantes. La sesión me relajó de una forma inesperada. A los pocos días noté que la tensión disminuyó y hoy puedo dormir mejor.",
+      avatar: null,
+    },
+    {
+      name: "Natalia G.",
+      type: "Armonización Cuántica",
+      text: "Salí de la sesión con una ligereza increíble, como si hubiera soltado una mochila muy pesada. Mi energía vital volvió y me siento más presente en mi día a día.",
+      avatar: null,
+    },
+    {
+      name: "Carolina M.",
+      type: "Armonización Cuántica",
+      text: "Me encontraba en un momento de duelo y con mucho dolor en el pecho. La armonización me dio contención, alivio y un espacio seguro para sanar.",
+      avatar: null,
+    },
   ];
 
   return (
@@ -276,11 +377,11 @@ export default function App() {
             <aside
               id="mobile-menu"
               className={`fixed inset-y-0 right-0 z-50 w-72 max-w-[85%] transform shadow-2xl border-l border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
-              style={{ backgroundColor: '#000000' }}
+              style={{ backgroundColor: '#2A114A !important', backgroundImage: 'none !important' }}
               role="dialog"
               aria-modal="true"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: '#2A114A' }}>
                 <div className="flex items-center gap-2">
                   <Logo accent={palette.accent} small />
                   <span className="text-sm font-semibold">Coaching Cuántico</span>
@@ -294,7 +395,7 @@ export default function App() {
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-              <nav className="px-2 py-2">
+              <nav className="px-2 py-2" style={{ backgroundColor: '#2A114A' }}>
                 {sections.map((s) => (
                   <a
                     key={s.id}
@@ -325,7 +426,11 @@ export default function App() {
             <AnimatedSection className="mx-auto grid max-w-7xl items-center gap-10 px-4 md:grid-cols-2">
               <div>
                 <h1 className="text-3xl font-extrabold leading-tight md:text-6xl">
-                  <span className="block">Coaching <Glow>Cuántico</Glow></span>
+                  <span className="block">
+                    <span className="relative inline-block align-middle" style={{ textShadow: `0 0 18px ${palette.glow}` }}>
+                      Coaching <Glow>Cuántico</Glow>
+                    </span>
+                  </span>
                   <span className="mt-4 block text-xl font-light text-white/80 md:text-3xl">
                     Armoniza mente, emoción y energía con un método simple y reproducible.
                   </span>
@@ -336,7 +441,7 @@ export default function App() {
                 </div>
               </div>
               <div className="relative flex items-center justify-center">
-                <FlowerOfLife accent={palette.accent} />
+                <FlowerOfLife accent={palette.accent} duration={36} />
               </div>
             </AnimatedSection>
             <ScrollIndicator />
@@ -368,16 +473,47 @@ export default function App() {
           </section>
           
           <section id="about" className="relative border-t border-white/10 py-20">
-            <AnimatedSection className="mx-auto grid max-w-6xl items-center gap-10 px-4 md:grid-cols-5">
-                <div className="md:col-span-2">
-                    <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-2xl transition-transform hover:scale-105">
-                        <img 
-                            src="https://placehold.co/400x500/1A1040/FFFFFF?text=Guido+Di+Pietro" 
-                            alt="Foto profesional de Guido Di Pietro" 
-                            className="h-full w-full object-cover"
-                        />
-                    </div>
+            <AnimatedSection className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 md:grid-cols-5">
+        {/* Fondo sutil con acento para mayor impacto visual */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-20">
+          <div
+            className="absolute left-1/2 -translate-x-[60%] md:left-[8%] md:translate-x-0 top-1/2 -translate-y-1/2 h-72 w-72 md:h-[28rem] md:w-[28rem] rounded-full"
+            style={{ background: `radial-gradient(closest-side, ${palette.accent}33, transparent 70%)` }}
+          />
+        </div>
+        <div className="md:col-span-2">
+          <div className="group relative mx-auto max-w-[240px] sm:max-w-[300px] md:max-w-none">
+            {/* halo de luz */}
+            <div
+              aria-hidden
+              className="absolute -inset-4 -z-10 rounded-[22px] opacity-70 blur-2xl transition duration-700 group-hover:opacity-90"
+              style={{ background: `linear-gradient(135deg, ${palette.accent}33, transparent 60%)` }}
+            />
+            {/* marco con borde degradado */}
+            <div
+              className="relative rounded-[18px] p-[2px] shadow-2xl transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:scale-[1.02] md:group-hover:rotate-[0.5deg]"
+              style={{ background: `linear-gradient(135deg, ${palette.accent}99, rgba(255,255,255,0.08))` }}
+            >
+              <div className="rounded-[16px] overflow-hidden bg-black/40 ring-1 ring-white/10">
+                <div className="aspect-[4/5]">
+                  <img
+                    src="/gdp.webp"
+                    alt="Foto profesional de Guido Di Pietro"
+                    width="400"
+                    height="500"
+                    loading="lazy"
+                    decoding="async"
+                    fetchpriority="low"
+                    sizes="(max-width: 768px) 260px, 420px"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
+              </div>
+            </div>
+            {/* brillo inferior sutil */}
+            <div aria-hidden className="pointer-events-none absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-2/3 bg-gradient-to-r from-transparent via-white/25 to-transparent blur-md opacity-60" />
+          </div>
+        </div>
         <div className="md:col-span-3">
           <h2 className="mb-4 text-2xl font-bold md:text-4xl">Soy <Glow>Guido Di Pietro</Glow></h2>
           <div className="leading-relaxed text-white/90 text-sm md:text-base space-y-4">
@@ -387,14 +523,84 @@ export default function App() {
             <p>En paralelo, desarrollé mi carrera en diseño gráfico, programación y tecnología, integrando creatividad y visión moderna con canales ancestrales como la gemoterapia, la radiestesia y la geometría sagrada. Considero que la verdadera sanación surge cuando logramos unir lo antiguo con lo nuevo, lo espiritual con lo cotidiano, lo personal con lo universal para sortear esos obstáculos que nos impiden conectarnos.</p>
             <p>Mi propósito es ser puente y acompaño a quienes buscan claridad, alivio y expansión, brindando un espacio seguro, amoroso y transformador.</p>
           </div>
-                    <ul className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
-                        <BenefitItem icon="hands" text="Acompañamiento humano, sin juicios" />
-                        <BenefitItem icon="chat" text="Lenguaje simple, cero tecnicismos" />
-                        <BenefitItem icon="shield" text="Ética y confidencialidad" />
-                        <BenefitItem icon="screen" text="Sesiones online y presenciales" />
-                    </ul>
                 </div>
             </AnimatedSection>
+          </section>
+
+          {/* Certificaciones (movido justo debajo de "Quién soy") */}
+          <section id="certs" className="relative border-t border-white/10 pt-12 pb-16">
+            <div className="mx-auto max-w-6xl px-4">
+              <AnimatedSection>
+                <h2 className="mb-4 text-2xl font-bold md:text-3xl">
+                  <button
+                    type="button"
+                    onClick={() => setCertsOpen((v) => !v)}
+                    aria-expanded={certsOpen}
+                    aria-controls="certs-panel"
+                    className="w-full flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left hover:bg-white/10 transition"
+                  >
+                    <span className="mx-auto">Certificaciones y Formación</span>
+                    <span
+                      className={`shrink-0 transition-transform duration-300 ${certsOpen ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </span>
+                  </button>
+                </h2>
+                <div
+                  id="certs-panel"
+                  ref={certsContentRef}
+                  className="overflow-hidden transition-all duration-300"
+                  style={{ maxHeight: certsOpen ? certsHeight : 0, opacity: certsOpen ? 1 : 0.5 }}
+                >
+                  <div className="mx-auto mb-6 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-white/90 mt-6">
+                    {[
+                      { label: 'Coach Ontologico Profesional', image: null },
+                      { label: 'Operador de Mesa Cuantica', image: '/Certificados/operador mesa cuantica.png' },
+                      { label: 'Radiestesia hebrea', image: '/Certificados/Radiestesia hebrea.png' },
+                      { label: 'Radiestecia cuantica con cristales', image: '/Certificados/Radiestecia cuantica con cristales.png' },
+                      { label: 'Operador de tableros y simbolos pleyadianos', image: '/Certificados/Operador de tableros y simbolos pleyadianos.png' },
+                      { label: 'Reiki instructor nivel 3', image: '/Certificados/Reiki instructor nivel 3.png' },
+                      { label: 'Diksha Giver facilitador', image: '/Certificados/Diksha Giver facilitador.png' },
+                      { label: 'Operador de Cristales y Tameana', image: '/Certificados/Operador de Cristales y Tameana.png' },
+                    ].map((cert, i) => (
+                      <article
+                        key={i}
+                        className="group relative flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 focus-within:bg-white/10 focus-within:ring-2 focus-within:ring-white/20"
+                        tabIndex={0}
+                      >
+                        {cert.image ? (
+                          <button
+                            type="button"
+                            onClick={() => openLightbox(cert.image, `Certificado ${cert.label}`)}
+                            className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 cursor-zoom-in"
+                            aria-label={`Ampliar ${cert.label}`}
+                          >
+                            <img
+                              src={cert.image}
+                              alt={`Certificado ${cert.label}`}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </button>
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                          </div>
+                        )}
+                        <span className="text-sm md:text-base leading-snug">{cert.label}</span>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-4 text-white/70">
+                    <Badge accent={palette.accent}>10+ años de experiencia</Badge>
+                    <Badge accent={palette.accent}>Sesiones 100% online</Badge>
+                  </div>
+                </div>
+              </AnimatedSection>
+            </div>
           </section>
           
           <section id="contact" className="relative border-t border-white/10 py-20">
@@ -434,6 +640,31 @@ export default function App() {
               </AnimatedSection>
             </div>
           </section>
+          {lightbox.open && (
+            <div
+              className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              onClick={closeLightbox}
+            >
+              <img
+                src={lightbox.src}
+                alt={lightbox.alt}
+                className="max-w-[96vw] max-h-[92vh] sm:max-w-[90vw] sm:max-h-[88vh] w-auto h-auto object-contain rounded-xl ring-1 ring-white/10 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+                decoding="async"
+                loading="eager"
+              />
+              <button
+                type="button"
+                onClick={closeLightbox}
+                aria-label="Cerrar"
+                className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          )}
         </main>
         
         <footer className="border-t border-white/10 text-white/80">
@@ -445,10 +676,7 @@ export default function App() {
                 <span className="sm:hidden">© {new Date().getFullYear()} Coaching Cuántico — G. Di Pietro</span>
               </span>
             </div>
-            <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="text-xs transition hover:text-white shrink-0">
-              <span className="hidden sm:inline">Volver arriba</span>
-              <span className="sm:hidden">Arriba</span>
-            </a>
+            {/* Botón de volver arriba removido a pedido */}
           </div>
         </footer>
 
@@ -558,71 +786,178 @@ function SacredGeometryOverlay({ accent }) {
   );
 }
 
-function FlowerOfLife({ accent }) {
-  // ... (código sin cambios)
-  const circles = [];
-  const r = 20;
-  const stepX = r * Math.sqrt(3);
-  const stepY = r * 1.5;
-  const cx = 100, cy = 100;
+// Flor de la Vida simplificada para el hero
+function FlowerOfLife({ accent, size = 200, spin = true, duration = 24 }) {
+  // Flower of Life exact 19 circles (hex radius = 2), outer ring encloses (radius = 3R)
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const R = size / 6 - 2; // circle radius derived from size so that outer ring fits viewBox
+  const cx = size / 2;
+  const cy = size / 2;
 
-  for (let row = -3; row <= 3; row++) {
-    for (let col = -3; col <= 3; col++) {
-      const x = cx + col * stepX + (row % 2 ? stepX / 2 : 0);
-      const y = cy + row * stepY;
-      if (Math.hypot(x - cx, y - cy) < 85) circles.push(<circle key={`${row}-${col}`} cx={x} cy={y} r={r} />);
+  // Generate axial hex coords within radius 2, then map to triangular lattice
+  const centers = [];
+  for (let u = -2; u <= 2; u++) {
+    const vmin = Math.max(-2, -u - 2);
+    const vmax = Math.min(2, -u + 2);
+    for (let v = vmin; v <= vmax; v++) {
+      const x = cx + u * R + v * (R / 2);
+      const y = cy + v * (R * Math.sqrt(3) / 2);
+      centers.push({ x, y });
     }
   }
 
   return (
-    <svg viewBox="0 0 200 200" className="h-72 w-72" fill="none" stroke={accent} strokeWidth="1.2" style={{ filter: "drop-shadow(0 0 12px rgba(203,161,53,0.6))" }}>
-      {circles}
-      <circle cx="100" cy="100" r="90" />
+    <svg
+      viewBox={`0 0 ${size} ${size}`}
+      className="h-72 w-72"
+      fill="none"
+      style={{ filter: "drop-shadow(0 0 12px rgba(203,161,53,0.6))" }}
+    >
+      <g stroke={accent} strokeWidth="1.2">
+        <g transform={`rotate(0 ${cx} ${cy})`}>
+          {(!prefersReducedMotion && spin) && (
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from={`0 ${cx} ${cy}`}
+              to={`360 ${cx} ${cy}`}
+              dur={`${duration}s`}
+              repeatCount="indefinite"
+            />
+          )}
+          {centers.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r={R} />
+          ))}
+          {/* Outer ring */}
+          <circle cx={cx} cy={cy} r={3 * R} />
+        </g>
+      </g>
     </svg>
   );
 }
 
 function Carousel({ items, accent }) {
-    const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(0);
+  const containerRef = useRef(null);
+  const touch = useRef({ x: 0, y: 0, active: false });
+  const paused = useRef(false);
+  const timerRef = useRef(null);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setIndex((prevIndex) => (prevIndex + 1) % items.length);
-        }, 4000);
-        return () => clearInterval(timer);
-    }, [items.length]);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timerRef.current = setInterval(() => {
+      if (!paused.current) setIndex((prevIndex) => (prevIndex + 1) % items.length);
+    }, 5000);
+    return () => clearInterval(timerRef.current);
+  }, [items.length]);
 
-    return (
-        <div className="relative mx-auto max-w-2xl overflow-hidden">
-            <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${index * 100}%)` }}>
-                {items.map((t, i) => (
-                    <div key={i} className="min-w-full flex-shrink-0 px-2">
-                        <div className="rounded-2xl border border-white/10 bg-black/20 p-8 shadow-xl backdrop-blur-xl transition-all duration-500" style={{ boxShadow: `0 0 40px ${accent}1A` }}>
-                            <p className="text-lg leading-relaxed text-white/90">“{t.text}”</p>
-                            <div className="mt-6 flex items-center gap-4">
-                                <div className="h-1 w-8 rounded-full" style={{ background: accent }}></div>
-                                <div>
-                                    <div className="font-semibold" style={{ color: accent }}>{t.name}</div>
-                                    <div className="text-sm text-white/60">{t.type}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="mt-6 flex justify-center gap-2">
-                {items.map((_, i) => (
-                    <button
-                        key={i}
-                        aria-label={`Ir al testimonio ${i + 1}`}
-                        onClick={() => setIndex(i)}
-                        className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${i === index ? 'w-6 bg-opacity-100' : 'bg-opacity-40 hover:bg-opacity-70'}`}
-                        style={{ background: accent }}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+  const go = (dir) => setIndex((prev) => (prev + dir + items.length) % items.length);
+
+  const onTouchStart = (e) => {
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY, active: true };
+    // Pausa el autoplay durante el touch
+    paused.current = true;
+  };
+  const onTouchMove = (e) => {
+    if (!touch.current.active) return;
+    e.preventDefault(); // Previene scroll vertical accidental
+    const t = e.touches[0];
+    const dx = t.clientX - touch.current.x;
+    if (Math.abs(dx) > 30) { // Reducido umbral para mejor responsividad
+      go(dx < 0 ? 1 : -1);
+      touch.current.active = false;
+    }
+  };
+  const onTouchEnd = () => { 
+    touch.current.active = false; 
+    // Reanuda autoplay después de un breve delay
+    setTimeout(() => { paused.current = false; }, 1000);
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') go(-1);
+    if (e.key === 'ArrowRight') go(1);
+  };
+
+  return (
+    <div
+      className="relative mx-auto w-full px-2 sm:px-4 md:px-0 max-w-5xl overflow-hidden"
+      ref={containerRef}
+      onMouseEnter={() => (paused.current = true)}
+      onMouseLeave={() => (paused.current = false)}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onKeyDown={onKeyDown}
+      tabIndex={0}
+      aria-live="polite"
+    >
+      <div
+        className="flex transition-transform duration-500 ease-out"
+        style={{ transform: `translateX(-${index * 100}%)` }}
+      >
+        {items.map((t, i) => (
+          <div key={i} className="min-w-full flex-shrink-0 flex justify-center px-1">
+            <article
+              className="w-full max-w-[82vw] xs:max-w-[340px] sm:max-w-[400px] md:max-w-[520px] rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-black/30 p-3 sm:p-4 md:p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:shadow-2xl min-h-[140px] sm:min-h-[160px] flex flex-col justify-between"
+              style={{ boxShadow: `0 10px 40px ${accent}20` }}
+            >
+              <div>
+                <p className="text-[14px] sm:text-[15px] md:text-[17px] leading-relaxed text-white/90 mb-2 sm:mb-3">{t.text}</p>
+              </div>
+              <div className="flex items-center gap-2.5 mt-auto">
+                {t.avatar ? (
+                  <img src={t.avatar} alt={t.name} className="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover ring-1 ring-white/10" loading="lazy" />
+                ) : (
+                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/10 ring-1 ring-white/10" />
+                )}
+                <div>
+                  <div className="font-semibold text-[13px] sm:text-sm md:text-base" style={{ color: accent }}>{t.name}</div>
+                  <div className="text-[11px] sm:text-xs text-white/60">{t.type}{t.city ? ` · ${t.city}` : ''}</div>
+                </div>
+              </div>
+            </article>
+          </div>
+        ))}
+      </div>
+      {/* Arrows */}
+      <button
+        aria-label="Anterior"
+        onClick={() => go(-1)}
+        className="absolute left-1 sm:-left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button
+        aria-label="Siguiente"
+        onClick={() => go(1)}
+        className="absolute right-1 sm:-right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      {/* Dots */}
+      <div className="mt-5 flex justify-center gap-2.5">
+        {items.map((_, i) => (
+          <button
+            key={i}
+            aria-label={`Ir al testimonio ${i + 1}`}
+            onClick={() => setIndex(i)}
+            className={`h-2.5 w-2.5 rounded-full transition-colors ${i === index ? 'bg-white shadow-[0_0_0_2px_rgba(255,255,255,0.25)]' : 'bg-white/40 hover:bg-white/70'}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Badge({ accent, children }) {
+  return (
+  <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/10 bg-white/5">
+    <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: accent }} />
+    {children}
+  </span>
+  );
 }
 
 function ContactForm({ accent }) {
