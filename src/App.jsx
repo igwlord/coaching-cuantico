@@ -90,6 +90,7 @@ export default function App() {
     { id: "intro", label: "El Proceso" },
     { id: "about", label: "Quién soy" },
     { id: "certs", label: "Certificaciones" },
+    { id: "pricing", label: "Paquetes" },
     { id: "contact", label: "Contacto" },
   ];
 
@@ -104,6 +105,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [contactPrefill, setContactPrefill] = useState({ mode: null, message: '' });
   // Acordeón Certificaciones + Lightbox de diplomas
   const [certsOpen, setCertsOpen] = useState(false);
   const certsContentRef = useRef(null);
@@ -254,6 +256,18 @@ export default function App() {
       doScroll();
     }
   };
+
+  // Prefill desde URL (?mode=consulta|sesion&msg=...)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+      const msg = params.get('msg');
+      if ((mode === 'consulta' || mode === 'sesion') || msg) {
+        setContactPrefill({ mode: mode || null, message: msg || '' });
+      }
+    } catch {}
+  }, []);
 
   // Bloquea scroll cuando el menú móvil está abierto y cierra con Escape
   useEffect(() => {
@@ -448,7 +462,7 @@ export default function App() {
             </button>
             <a
               href="#contact"
-              onClick={(e) => handleNavClick(e, 'contact')}
+              onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero agendar una sesión de Coaching Cuántico.' }); handleNavClick(e, 'contact'); }}
               className="hidden md:inline-flex rounded-xl px-4 py-2 text-xs font-semibold shadow-[0_0_20px] transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 md:text-sm"
               style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
             >
@@ -527,8 +541,17 @@ export default function App() {
                 </h1>
                 <div className="mt-10 flex flex-wrap items-center gap-4">
                   <a href="#intro" onClick={(e) => handleNavClick(e, 'intro')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Cómo funciona</a>
-                  <a href="#contact" onClick={(e) => handleNavClick(e, 'contact')} className="transform rounded-xl px-5 py-3 font-semibold transition hover:scale-105 active:scale-95" style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}>Iniciar ahora</a>
+                  <a
+                    href="#contact"
+                    onClick={(e) => { setContactPrefill({ mode: 'consulta', message: 'Quiero una consulta de diagnóstico de 15 minutos (gratuita).' }); handleNavClick(e, 'contact'); }}
+                    className="transform rounded-xl px-5 py-3 font-semibold transition hover:scale-105 active:scale-95"
+                    style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
+                  >
+                    Reserva consulta gratis 15′
+                  </a>
+                  <a href="#pricing" onClick={(e) => handleNavClick(e, 'pricing')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Ver paquetes</a>
                 </div>
+                <p className="mt-3 text-white/70 text-sm">Cupos limitados por semana: 6 plazas</p>
               </div>
               <div className="relative flex items-center justify-center">
                 <FlowerOfLife accent={palette.accent} duration={36} />
@@ -705,12 +728,94 @@ export default function App() {
             </div>
           </section>
           
+          {/* Paquetes / Pricing */}
+          <section id="pricing" className="relative border-t border-white/10 py-20">
+            <div className="mx-auto max-w-6xl px-4">
+              <AnimatedSection>
+                <h2 className="section-title mb-8 text-2xl font-bold md:text-4xl">Paquetes y Honorarios</h2>
+                <p className="mx-auto max-w-2xl text-center text-white/80 mb-10 text-sm md:text-base">Elige el formato que mejor se adapte a tu proceso. Puedes empezar con una consulta breve para alinear expectativas y objetivos.</p>
+              </AnimatedSection>
+              {/* Mobile: horizontal scroll with snap; Desktop: 3-column grid */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:overflow-visible md:snap-none overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+                <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
+                {/* Plan 1 */}
+                <AnimatedSection>
+                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-start leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                    <h3 className="text-xl font-semibold">Sesión única</h3>
+                    <div className="mt-2 flex-1">
+                      <p className="text-white/80">Armonización cuántica 1:1. Ideal para una necesidad puntual o primer acercamiento.</p>
+                      <ul className="mt-4 space-y-2 text-white/80">
+                        <li>· 60 a 90 minutos.</li>
+                        <li>· Audio personalizado post-sesión.</li>
+                        <li>· Soporte de integración 7 días.</li>
+                      </ul>
+                    </div>
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero agendar una sesión única.' }); handleNavClick(e, 'contact'); }}
+                        className="w-full rounded-xl px-4 py-2 font-semibold text-black text-sm md:text-base"
+                        style={{ background: palette.accent }}
+                      >Agendar sesión</button>
+                    </div>
+                  </article>
+                </AnimatedSection>
+                {/* Plan 2 - Destacado */}
+                <AnimatedSection>
+                  <article className="relative rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-md h-full flex flex-col ring-1 ring-white/10 md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-center leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                    <div className="absolute -top-3 right-4 rounded-full px-3 py-1 text-xs font-semibold text-black" style={{ background: palette.accent }}>Recomendado</div>
+                    <h3 className="text-xl font-semibold">Pack 3 sesiones</h3>
+                    <div className="mt-2 flex-1">
+                      <p className="text-white/80">Proceso de transformación con seguimiento para resultados sostenibles.</p>
+                      <ul className="mt-4 space-y-2 text-white/80">
+                        <li>· 3 sesiones cada 30 días.</li>
+                        <li>· Plan de objetivos y metas personalizado.</li>
+                        <li>· Soporte terapéutico durante todo el proceso.</li>
+                      </ul>
+                    </div>
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero reservar el Pack de 3 sesiones.' }); handleNavClick(e, 'contact'); }}
+                        className="w-full rounded-xl px-4 py-2 font-semibold text-black text-sm md:text-base"
+                        style={{ background: palette.accent }}
+                      >Reservar pack</button>
+                    </div>
+                  </article>
+                </AnimatedSection>
+                {/* Plan 3 (reemplazo) */}
+                <AnimatedSection>
+                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-end leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                    <h3 className="text-xl font-semibold">Limpieza de espacios/negocios</h3>
+                    <div className="mt-2 flex-1">
+                      <p className="text-white/80">Armonización y limpieza profunda para casas, negocios y terrenos.</p>
+                      <ul className="mt-4 space-y-2 text-white/80">
+                        <li>· Videollamada personalizada, 100% online.</li>
+                        <li>· Sesión de 120 minutos y seguimiento energético del espacio.</li>
+                        <li>· Audio personalizado post-sesión.</li>
+                      </ul>
+                    </div>
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero agendar una sesión de Limpieza de espacios/negocios.' }); handleNavClick(e, 'contact'); }}
+                        className="w-full rounded-xl px-4 py-2 font-semibold text-black text-sm md:text-base"
+                        style={{ background: palette.accent }}
+                      >Agendar sesión</button>
+                    </div>
+                  </article>
+                </AnimatedSection>
+              </div>
+              <p className="mt-6 text-center text-white/70 text-sm">¿Tenés dudas? <button type="button" className="underline" onClick={(e)=>{ setContactPrefill({ mode: 'consulta', message: 'Quiero una consulta breve para elegir el mejor paquete.' }); handleNavClick(e,'contact'); }}>Agenda una consulta breve</button>.</p>
+            </div>
+          </section>
+
           <section id="contact" className="relative border-t border-white/10 py-20">
             <div className="mx-auto grid max-w-5xl items-start gap-10 px-4 lg:grid-cols-2">
               <AnimatedSection>
                 <h2 className="section-title mb-2 text-2xl font-bold md:text-4xl">Contacto</h2>
-                <p className="text-white/90 mb-4">¿Tienes preguntas sobre este proceso de armonización? ¿Quieres agendar una sesión? Envíame un mensaje por WhatsApp</p>
-                <ContactForm accent={palette.accent} />
+                <p className="text-white/90 mb-4">¿Tenés preguntas o querés agendar? Envíame un WhatsApp. Si vienes desde un paquete, el mensaje estará prellenado.</p>
+                <ContactForm accent={palette.accent} prefill={contactPrefill} />
               </AnimatedSection>
               <AnimatedSection>
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-6 backdrop-blur-xl">
@@ -794,7 +899,7 @@ export default function App() {
         >
             <a
               href="#contact"
-              onClick={(e) => handleNavClick(e, 'contact')}
+              onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero agendar una sesión.' }); handleNavClick(e, 'contact'); }}
               className="pointer-events-auto rounded-full p-2.5 text-black shadow-lg shadow-black/40 ring-1 ring-black/10"
               style={{ background: palette.accent }}
               aria-label="Agendar una sesión"
@@ -1067,39 +1172,49 @@ function Badge({ accent, children }) {
   );
 }
 
-function ContactForm({ accent }) {
+function ContactForm({ accent, prefill }) {
   const [form, setForm] = useState({ name: '', email: '', message: '', mode: 'consulta' });
-    const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({});
 
-    const validate = () => {
-        const newErrors = {};
-        if (!form.name.trim()) newErrors.name = 'El nombre es requerido.';
-        if (!form.email) {
-            newErrors.email = 'El correo es requerido.';
-        } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-            newErrors.email = 'El formato del correo es inválido.';
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-    
-    const handleChange = (e) => {
-      const { id, value } = e.target;
-        setForm(prev => ({ ...prev, [id]: value }));
-        if (errors[id]) {
-           validate();
-        }
-    };
-    
-    const handleBlur = (e) => {
-        validate();
-    };
+  // Apply prefill when provided
+  useEffect(() => {
+    if (!prefill) return;
+    setForm((prev) => ({
+      ...prev,
+      mode: prefill.mode ? prefill.mode : prev.mode,
+      message: prefill.message ? prefill.message : prev.message,
+    }));
+  }, [prefill?.mode, prefill?.message]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = 'El nombre es requerido.';
+    if (!form.email) {
+      newErrors.email = 'El correo es requerido.';
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = 'El formato del correo es inválido.';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setForm(prev => ({ ...prev, [id]: value }));
+    if (errors[id]) {
+       validate();
+    }
+  };
+  
+  const handleBlur = (e) => {
+    validate();
+  };
 
   const whatsappLink = useMemo(() => {
     const base = "https://wa.me/5491125124207";
-        const encabezado = form.mode === 'sesion'
-          ? 'Hola Guido, quiero agendar una sesión de Coaching Cuántico.'
-          : 'Hola Guido, tengo una consulta sobre este proceso.';
+    const encabezado = form.mode === 'sesion'
+      ? 'Hola Guido, quiero agendar una sesión de Coaching Cuántico.'
+      : 'Hola Guido, tengo una consulta sobre este proceso.';
     const text = encodeURIComponent(
       `${encabezado}\n\n` +
       `Nombre completo: ${form.name}\n` +
@@ -1110,9 +1225,9 @@ function ContactForm({ accent }) {
     return `${base}?text=${text}`;
   }, [form]);
 
-    const isFormValid = Object.keys(errors).length === 0 && form.name && form.email;
+  const isFormValid = Object.keys(errors).length === 0 && form.name && form.email;
 
-    return (
+  return (
     <form className="mt-6 grid gap-4" onSubmit={(e) => e.preventDefault()}>
       <div className="grid gap-1">
         <label htmlFor="mode" className="text-sm text-white/80">¿Qué querés hacer?</label>
@@ -1121,33 +1236,33 @@ function ContactForm({ accent }) {
           <option value="sesion">Agendar una sesión</option>
         </select>
       </div>
-            <div className="grid gap-1">
-                <label htmlFor="name" className="text-sm text-white/80">Nombre completo</label>
-                <input id="name" value={form.name} onChange={handleChange} onBlur={handleBlur} required placeholder="Tu nombre y apellido" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.name ? 'border-red-500/50' : 'border-white/15'}`} />
-                {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
-            </div>
-            <div className="grid gap-1">
-                <label htmlFor="email" className="text-sm text-white/80">Correo electrónico</label>
-                <input type="email" id="email" value={form.email} onChange={handleChange} onBlur={handleBlur} required placeholder="tu.correo@email.com" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.email ? 'border-red-500/50' : 'border-white/15'}`} />
-                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
-            </div>
+      <div className="grid gap-1">
+        <label htmlFor="name" className="text-sm text-white/80">Nombre completo</label>
+        <input id="name" value={form.name} onChange={handleChange} onBlur={handleBlur} required placeholder="Tu nombre y apellido" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.name ? 'border-red-500/50' : 'border-white/15'}`} />
+        {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
+      </div>
+      <div className="grid gap-1">
+        <label htmlFor="email" className="text-sm text-white/80">Correo electrónico</label>
+        <input type="email" id="email" value={form.email} onChange={handleChange} onBlur={handleBlur} required placeholder="tu.correo@email.com" className={`rounded-xl border bg-white/10 px-4 py-3 outline-none transition-all focus:ring-2 focus:ring-white/30 ${errors.email ? 'border-red-500/50' : 'border-white/15'}`} />
+        {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+      </div>
       <div className="grid gap-1">
         <label htmlFor="message" className="text-sm text-white/80">Mensaje (opcional)</label>
-                <textarea id="message" value={form.message} onChange={handleChange} rows={3} placeholder="Escribe aquí tu mensaje" title="Escribe aquí tu mensaje" className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/30" />
+        <textarea id="message" value={form.message} onChange={handleChange} rows={3} placeholder="Escribe aquí tu mensaje" title="Escribe aquí tu mensaje" className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-white/30" />
       </div>
-            <div className="flex gap-4">
-                <a 
-                    href={isFormValid ? whatsappLink : '#'}
-                    onClick={(e) => !isFormValid && e.preventDefault()}
-                    target="_blank" 
-                    rel="noreferrer" 
-                    className={`rounded-xl px-5 py-3 font-semibold text-black transition-all duration-300 ${isFormValid ? 'opacity-100 cursor-pointer hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}`} 
-                    style={{ background: accent, boxShadow: `0 0 18px rgba(203,161,53,0.6)` }}>
-                    Enviar por WhatsApp
-                </a>
-            </div>
-        </form>
-    );
+      <div className="flex gap-4">
+        <a 
+          href={isFormValid ? whatsappLink : '#'}
+          onClick={(e) => !isFormValid && e.preventDefault()}
+          target="_blank" 
+          rel="noreferrer" 
+          className={`rounded-xl px-5 py-3 font-semibold text-black transition-all duration-300 ${isFormValid ? 'opacity-100 cursor-pointer hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}`} 
+          style={{ background: accent, boxShadow: `0 0 18px rgba(203,161,53,0.6)` }}>
+          Enviar por WhatsApp
+        </a>
+      </div>
+    </form>
+  );
 }
 
 function ScrollIndicator() {
