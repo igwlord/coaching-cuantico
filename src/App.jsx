@@ -387,7 +387,7 @@ export default function App() {
         body { font-family: 'Inter', sans-serif; }
       `}</style>
       <div
-        className="min-h-screen w-full text-white antialiased"
+        className="min-h-screen w-full text-white antialiased overflow-x-hidden"
       >
         {/* Background Layer */}
         <div 
@@ -447,7 +447,7 @@ export default function App() {
             <aside
               id="mobile-menu"
               className={`fixed inset-y-0 right-0 z-50 w-72 max-w-[85%] transform shadow-2xl border-l border-white/10 transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
-              style={{ backgroundColor: '#2A114A !important', backgroundImage: 'none !important' }}
+              style={{ backgroundColor: '#2A114A', backgroundImage: 'none', willChange: 'transform' }}
               role="dialog"
               aria-modal="true"
             >
