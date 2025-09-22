@@ -1272,7 +1272,15 @@ function Carousel({ items, accent }) {
                 {t.avatar ? (
                   <img src={t.avatar} alt={t.name} className="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover ring-1 ring-white/10" loading="lazy" />
                 ) : (
-                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/10 ring-1 ring-white/10" />
+                  <span className="relative h-7 w-7 sm:h-8 sm:w-8 rounded-full overflow-hidden ring-1 ring-white/10 bg-black/30 flex-shrink-0">
+                    <img
+                      src="/Brand/cc-logo.webp"
+                      alt="Logo"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.src = '/Brand/cc-logo.png'; }}
+                    />
+                  </span>
                 )}
                 <div>
                   <div className="font-semibold text-[13px] sm:text-sm md:text-base" style={{ color: accent }}>{t.name}</div>
