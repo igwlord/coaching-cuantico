@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import UsersSection from "./sections/UsersSection";
 
 // Hook personalizado para detectar si un elemento está en pantalla
 function useOnScreen(options) {
@@ -90,6 +91,7 @@ export default function App() {
     { id: "intro", label: "El Proceso" },
     { id: "about", label: "Quién soy" },
     { id: "pricing", label: "Paquetes" },
+    { id: "usuarios", label: "Usuarios" },
     { id: "contact", label: "Contacto" },
   ];
 
@@ -132,6 +134,19 @@ export default function App() {
     updateAbout();
     window.addEventListener('resize', updateAbout);
     return () => window.removeEventListener('resize', updateAbout);
+  }, []);
+
+  // Asegurar que la página comience desde el inicio, no en #usuarios al recargar
+  useEffect(() => {
+    try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch {}
+    if (typeof window !== 'undefined' && window.location?.hash === '#usuarios') {
+      try {
+        const base = window.location.pathname + window.location.search + '#home';
+        history.replaceState(null, '', base);
+      } catch {}
+      // Forzamos el scroll arriba tras el siguiente frame para sobreescribir el salto al hash
+      setTimeout(() => { window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); }, 0);
+    }
   }, []);
 
   // Medir el alto del contenido del acordeón (para animar max-height)
@@ -881,8 +896,10 @@ export default function App() {
               </button>
             </div>
           )}
-        </main>
-        
+  </main>
+  {/* Sección de Usuarios (gate + home) */}
+  <UsersSection accent={palette.accent} />
+
         <footer className="border-t border-white/10 text-white/80">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 overflow-hidden">
             <div className="flex min-w-0 items-center gap-2">
@@ -918,17 +935,38 @@ export default function App() {
 
 function Logo({ accent, small = false }) {
   const size = small ? 18 : 26;
+  const sources = [
+    // Usuario colocó el archivo con B mayúscula
+    '/Brand/cc-logo.webp', '/Brand/cc-logo.jpg', '/Brand/cc-logo.png',
+    // Fallbacks en caso de variaciones de carpeta en minúscula
+    '/brand/cc-logo.webp', '/brand/cc-logo.jpg', '/brand/cc-logo.png'
+  ];
+  const [srcIdx, setSrcIdx] = useState(0);
   return (
     <div className="flex items-center gap-2 select-none">
-      <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden>
-        <circle cx="32" cy="32" r="30" stroke={accent} strokeWidth="2" opacity="0.8" />
-        {[0, 60, 120].map((r) => (
-          <g key={r} transform={`rotate(${r} 32 32)`}>
-            <circle cx="32" cy="18" r="10" stroke={accent} strokeWidth="1.5" opacity="0.7" />
-            <circle cx="32" cy="46" r="10" stroke={accent} strokeWidth="1.5" opacity="0.7" />
-          </g>
-        ))}
-      </svg>
+      <span className="relative inline-block overflow-hidden rounded-full ring-1 ring-white/10" style={{ width: size, height: size }}>
+        {/* Fallback vector debajo */}
+        <svg className="absolute inset-0" viewBox="0 0 64 64" fill="none" aria-hidden>
+          <circle cx="32" cy="32" r="30" stroke={accent} strokeWidth="2" opacity="0.8" />
+          {[0, 60, 120].map((r) => (
+            <g key={r} transform={`rotate(${r} 32 32)`}>
+              <circle cx="32" cy="18" r="10" stroke={accent} strokeWidth="1.5" opacity="0.7" />
+              <circle cx="32" cy="46" r="10" stroke={accent} strokeWidth="1.5" opacity="0.7" />
+            </g>
+          ))}
+        </svg>
+        {/* Imagen por encima; si falla, se oculta y queda el SVG */}
+        <img
+          src={sources[srcIdx]}
+          alt="Logo Coaching Cuántico"
+          className="h-full w-full object-cover"
+          loading="eager"
+          onError={(e) => {
+            if (srcIdx < sources.length - 1) setSrcIdx(srcIdx + 1);
+            else e.currentTarget.style.display = 'none';
+          }}
+        />
+      </span>
       <span className={small ? "text-sm font-semibold" : "text-lg font-semibold"}>CC</span>
     </div>
   );
