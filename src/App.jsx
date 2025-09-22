@@ -290,11 +290,11 @@ export default function App() {
     },
     {
       title: "Preparación y Conexión",
-      description: <>Se recomienda estar acostado para recibir la armonizacion  aunque si no puedes, la energia trabaja igual. Yo estaré activando la <Glow>plataforma cuántica</Glow>, conectando con la energía a través de péndulo, cristales y símbolos sagrados.</>
+      description: <>Se recomienda estar presente para recibir la armonización aunque si no puedes, la energía trabaja igual. Yo estaré activando la <Glow>plataforma cuántica</Glow>, conectando con vos o el espacio a través de las herramientas con la que trabajaré: <Glow>Cristales</Glow>, <Glow>geometría sagrada</Glow> y <Glow>símbolos de luz</Glow>.</>
     },
     {
       title: "Armonización Profunda",
-      description: <>En esta fase, trabajo sobre tus campos energéticos para <Glow>equilibrar chakras</Glow>, limpiar densidades y restaurar la coherencia entre mente, emoción y cuerpo.</>
+      description: <>En esta fase, trabajo sobre tus campos energéticos para equilibrar tus cuerpos, limpiar densidades y restaurar la coherencia entre mente, emoción y cuerpo. Si son espacios, trabajo sobre todo el terreno el tiempo que sea necesario.</>
     },
     {
       title: "Cierre y Protección",
@@ -306,7 +306,7 @@ export default function App() {
     },
     {
       title: "Soporte Posterior",
-      description: <>La energía sigue actuando hasta por un mes. Estoy disponible para que compartas tus sensaciones y resolver dudas durante el <Glow>proceso de integración</Glow>.</>
+      description: <>La energía sigue actuando hasta por un mes. Estaré disponible para que compartas tus sensaciones y resolver dudas durante el <Glow>proceso de integración</Glow>.</>
     }
   ];
   
@@ -536,22 +536,31 @@ export default function App() {
                     </span>
                   </span>
                   <span className="mt-4 block text-xl font-light text-white/80 md:text-3xl">
-                    Armoniza mente, emoción y energía con un método simple y reproducible.
+                    Armoniza tu mente, emociones y energía con un método simple y efectivo.
                   </span>
                 </h1>
-                <div className="mt-10 flex flex-wrap items-center gap-4">
-                  <a href="#intro" onClick={(e) => handleNavClick(e, 'intro')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Cómo funciona</a>
-                  <a
-                    href="#contact"
-                    onClick={(e) => { setContactPrefill({ mode: 'consulta', message: 'Quiero una consulta de diagnóstico de 15 minutos (gratuita).' }); handleNavClick(e, 'contact'); }}
-                    className="transform rounded-xl px-5 py-3 font-semibold transition hover:scale-105 active:scale-95"
-                    style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
-                  >
-                    Reserva consulta gratis 15′
-                  </a>
-                  <a href="#pricing" onClick={(e) => handleNavClick(e, 'pricing')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Ver paquetes</a>
+                {/* CTAs: en móvil mostramos solo 2 inline para armonía; en desktop mantenemos los 3 */}
+                <div className="mt-10 flex flex-wrap items-center gap-3">
+                  {/* Mobile-only pair */}
+                  <div className="flex w-full items-center gap-3 sm:gap-4 md:hidden">
+                    <a href="#intro" onClick={(e) => handleNavClick(e, 'intro')} className="flex-1 text-center transform rounded-xl border border-white/20 px-4 py-2.5 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Cómo funciona</a>
+                    <a href="#pricing" onClick={(e) => handleNavClick(e, 'pricing')} className="flex-1 text-center transform rounded-xl border border-white/20 px-4 py-2.5 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Ver paquetes</a>
+                  </div>
+                  {/* Desktop (md+) full set */}
+                  <div className="hidden md:flex items-center gap-4">
+                    <a href="#intro" onClick={(e) => handleNavClick(e, 'intro')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Cómo funciona</a>
+                    <a
+                      href="#contact"
+                      onClick={(e) => { setContactPrefill({ mode: 'consulta', message: 'Quiero una consulta de diagnóstico de 15 minutos (gratuita).' }); handleNavClick(e, 'contact'); }}
+                      className="transform rounded-xl px-5 py-3 font-semibold transition hover:scale-105 active:scale-95"
+                      style={{ background: palette.accent, color: "#0c0c0c", boxShadow: `0 0 24px ${palette.glow}` }}
+                    >
+                      Reserva consulta gratis 15′
+                    </a>
+                    <a href="#pricing" onClick={(e) => handleNavClick(e, 'pricing')} className="transform rounded-xl border border-white/20 px-5 py-3 font-semibold transition hover:scale-105 hover:border-white/40 active:scale-95">Ver paquetes</a>
+                  </div>
                 </div>
-                <p className="mt-3 text-white/70 text-sm">Cupos limitados por semana: 6 plazas</p>
+                {/* Nota de cupos eliminada a pedido */}
               </div>
               <div className="relative flex items-center justify-center">
                 <FlowerOfLife accent={palette.accent} duration={36} />
@@ -788,11 +797,11 @@ export default function App() {
                   <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-end leading-relaxed text-[13.5px] sm:text-sm md:text-base">
                     <h3 className="text-xl font-semibold">Limpieza de espacios/negocios</h3>
                     <div className="mt-2 flex-1">
-                      <p className="text-white/80">Armonización y limpieza profunda para casas, negocios y terrenos.</p>
+                      <p className="text-white/80">Armonización Cuántica para casas, negocios y terrenos. 100% online.</p>
                       <ul className="mt-4 space-y-2 text-white/80">
-                        <li>· Videollamada personalizada, 100% online.</li>
-                        <li>· Sesión de 120 minutos y seguimiento energético del espacio.</li>
+                        <li>· Sesión de 120 minutos.</li>
                         <li>· Audio personalizado post-sesión.</li>
+                        <li>· Seguimiento energético del espacio.</li>
                       </ul>
                     </div>
                     <div className="mt-6">
