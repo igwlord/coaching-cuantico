@@ -110,6 +110,8 @@ export default function App() {
   const [certsHeight, setCertsHeight] = useState(0);
   const [lightbox, setLightbox] = useState({ open: false, src: '', alt: '' });
   const scrollYRef = useRef(0);
+  const lastFocusRef = useRef(null);
+  const closeBtnRef = useRef(null);
   const openLightbox = (src, alt) => setLightbox({ open: true, src, alt });
   const closeLightbox = () => setLightbox({ open: false, src: '', alt: '' });
 
@@ -165,14 +167,32 @@ export default function App() {
     body.style.right = '0';
     body.style.overflow = 'hidden';
 
+    // Focus trap: mover foco al botón cerrar y mantener dentro
+    lastFocusRef.current = document.activeElement;
+    setTimeout(() => closeBtnRef.current?.focus(), 0);
+    const onTrap = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = Array.from(document.querySelectorAll('[data-lightbox-focus]'));
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    };
+    window.addEventListener('keydown', onTrap);
+
     return () => {
       window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onTrap);
       body.style.position = prev.position;
       body.style.top = prev.top;
       body.style.left = prev.left;
       body.style.right = prev.right;
       body.style.overflow = prev.overflow;
       window.scrollTo(0, scrollYRef.current);
+      // Devolver foco al elemento que abrió el lightbox
+      lastFocusRef.current?.focus?.();
     };
   }, [lightbox.open]);
 
@@ -738,12 +758,15 @@ export default function App() {
                 onClick={(e) => e.stopPropagation()}
                 decoding="async"
                 loading="eager"
+                data-lightbox-focus
               />
               <button
                 type="button"
                 onClick={closeLightbox}
                 aria-label="Cerrar"
                 className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+                ref={closeBtnRef}
+                data-lightbox-focus
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
