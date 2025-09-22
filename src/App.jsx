@@ -89,7 +89,6 @@ export default function App() {
     { id: "home", label: "Inicio" },
     { id: "intro", label: "El Proceso" },
     { id: "about", label: "Quién soy" },
-    { id: "certs", label: "Certificaciones" },
     { id: "pricing", label: "Paquetes" },
     { id: "contact", label: "Contacto" },
   ];
@@ -668,74 +667,70 @@ export default function App() {
               {aboutOpen ? 'Leer menos' : 'Leer más'}
             </button>
           )}
+
+          {/* Certificaciones integradas dentro de "Quién soy" */}
+          <div className="mt-8">
+            <h3 className="section-title mb-4 text-xl font-bold md:text-2xl">
+              <button
+                type="button"
+                onClick={() => setCertsOpen((v) => !v)}
+                aria-expanded={certsOpen}
+                aria-controls="certs-panel"
+                className="w-full flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left hover:bg-white/10 transition"
+              >
+                <span className="mx-auto">Certificaciones y Formación</span>
+                <span
+                  className={`${certsOpen ? 'rotate-180' : ''} shrink-0 transition-transform duration-300`}
+                  aria-hidden
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </button>
+            </h3>
+            <div
+              id="certs-panel"
+              ref={certsContentRef}
+              className="overflow-hidden transition-all duration-300"
+              style={{ maxHeight: certsOpen ? certsHeight : 0, opacity: certsOpen ? 1 : 0.5 }}
+            >
+              <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-white/90 mt-6">
+                {certifications.map((c, i) => (
+                  <article key={i} className="group rounded-xl border border-white/10 bg-white/5 overflow-hidden transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-white/20">
+                    <div className="relative aspect-[4/3] bg-black/20">
+                      {c.image ? (
+                        <button
+                          type="button"
+                          onClick={() => openLightbox(c.image, c.alt || `Certificado ${c.title}`)}
+                          className="absolute inset-0 w-full h-full focus:outline-none"
+                          aria-label={`Ampliar ${c.title}`}
+                        >
+                          <img
+                            src={c.image}
+                            alt={c.alt || c.title}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </button>
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17l4-4 3 3 5-5 3 3"/></svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h4 className="text-base md:text-lg font-semibold text-white">{c.title}</h4>
+                      <p className="mt-1 text-sm text-white/80">{c.desc}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
             </AnimatedSection>
           </section>
 
-          {/* Certificaciones (movido justo debajo de "Quién soy") */}
-          <section id="certs" className="relative border-t border-white/10 pt-12 pb-16">
-            <div className="mx-auto max-w-6xl px-4">
-              <AnimatedSection>
-                <h2 className="section-title mb-4 text-2xl font-bold md:text-3xl">
-                  <button
-                    type="button"
-                    onClick={() => setCertsOpen((v) => !v)}
-                    aria-expanded={certsOpen}
-                    aria-controls="certs-panel"
-                    className="w-full flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left hover:bg-white/10 transition"
-                  >
-                    <span className="mx-auto">Certificaciones y Formación</span>
-                    <span
-                      className={`shrink-0 transition-transform duration-300 ${certsOpen ? 'rotate-180' : ''}`}
-                      aria-hidden
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </span>
-                  </button>
-                </h2>
-                <div
-                  id="certs-panel"
-                  ref={certsContentRef}
-                  className="overflow-hidden transition-all duration-300"
-                  style={{ maxHeight: certsOpen ? certsHeight : 0, opacity: certsOpen ? 1 : 0.5 }}
-                >
-                  <div className="mx-auto mb-6 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-white/90 mt-6">
-                    {certifications.map((c, i) => (
-                      <article key={i} className="group rounded-xl border border-white/10 bg-white/5 overflow-hidden transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-white/20">
-                        <div className="relative aspect-[4/3] bg-black/20">
-                          {c.image ? (
-                            <button
-                              type="button"
-                              onClick={() => openLightbox(c.image, c.alt || `Certificado ${c.title}`)}
-                              className="absolute inset-0 w-full h-full focus:outline-none"
-                              aria-label={`Ampliar ${c.title}`}
-                            >
-                              <img
-                                src={c.image}
-                                alt={c.alt || c.title}
-                                className="h-full w-full object-cover"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            </button>
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17l4-4 3 3 5-5 3 3"/></svg>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-base md:text-lg font-semibold text-white">{c.title}</h3>
-                          <p className="mt-1 text-sm text-white/80">{c.desc}</p>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                  {/* Badges movidos debajo de Preguntas frecuentes */}
-                </div>
-              </AnimatedSection>
-            </div>
-          </section>
           
           {/* Paquetes / Pricing */}
           <section id="pricing" className="relative border-t border-white/10 py-20">
