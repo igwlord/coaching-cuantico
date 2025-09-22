@@ -426,12 +426,6 @@ export default function App() {
   // Datos mínimos para Certificaciones: título, descripción breve, imagen y alt
   const certifications = [
     {
-      title: 'Coach Ontológico Profesional',
-      desc: 'Formación en herramientas de coaching para acompañamiento y desarrollo personal.',
-      image: null,
-      alt: 'Certificado de Coach Ontológico Profesional',
-    },
-    {
       title: 'Operador de Mesa Cuántica',
       desc: 'Trabajo con plataforma cuántica para armonización energética a distancia.',
       image: '/Certificados/operador mesa cuantica.png',
@@ -641,6 +635,15 @@ export default function App() {
                   el proceso de cada sesión
                 </h3>
               </AnimatedSection>
+              {/* Animación sutil para el botón CTA de la tarjeta 6 */}
+              <style>{`
+                @keyframes ccPulseBtn { 
+                  0%, 100% { box-shadow: 0 0 14px ${palette.glow}; }
+                  50% { box-shadow: 0 0 24px ${palette.glow}; }
+                }
+                .btn-pulse { animation: ccPulseBtn 2.6s ease-in-out infinite; }
+                @media (prefers-reduced-motion: reduce) { .btn-pulse { animation: none; } }
+              `}</style>
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {processSteps.map((step, index) => (
                   <AnimatedSection key={index}>
@@ -652,6 +655,18 @@ export default function App() {
                         <h3 className="text-lg font-semibold text-white">{step.title}</h3>
                       </div>
                       <p className="mt-4 flex-grow text-white/80 text-sm md:text-base">{step.description}</p>
+                      {index === 5 && (
+                        <div className="mt-5 flex justify-center">
+                          <a
+                            href="#contact"
+                            onClick={(e) => { setContactPrefill({ mode: 'sesion', message: 'Quiero agendar una sesión.' }); handleNavClick(e, 'contact'); }}
+                            className="btn-pulse inline-flex items-center justify-center rounded-xl font-semibold transition-transform hover:scale-105 active:scale-95 ring-1 ring-white/10"
+                            style={{ background: palette.accent, color: '#0c0c0c', padding: '0.5rem 1rem' }}
+                          >
+                            <span className="text-sm md:text-base">Agendar sesión</span>
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </AnimatedSection>
                 ))}
@@ -764,20 +779,13 @@ export default function App() {
                   <article key={i} className="group rounded-xl border border-white/10 bg-white/5 overflow-hidden transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-white/20">
                     <div className="relative aspect-[4/3] bg-black/20">
                       {c.image ? (
-                        <button
-                          type="button"
-                          onClick={() => openLightbox(c.image, c.alt || `Certificado ${c.title}`)}
-                          className="absolute inset-0 w-full h-full focus:outline-none"
-                          aria-label={`Ampliar ${c.title}`}
-                        >
-                          <img
-                            src={c.image}
-                            alt={c.alt || c.title}
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </button>
+                        <img
+                          src={c.image}
+                          alt={c.alt || c.title}
+                          className="absolute inset-0 h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center ring-1 ring-white/10" style={{ background: `${palette.accent}14` }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={palette.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17l4-4 3 3 5-5 3 3"/></svg>
