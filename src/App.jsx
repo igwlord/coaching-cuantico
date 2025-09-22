@@ -88,7 +88,7 @@ function Glow({ children }) {
 export default function App() {
   const sections = useMemo(() => ([
     { id: "home", label: "Inicio" },
-    { id: "intro", label: "El Proceso" },
+    { id: "intro", label: "Cómo funciona" },
     { id: "about", label: "Quién soy" },
     { id: "pricing", label: "Paquetes" },
     { id: "usuarios", label: "Usuarios" },
@@ -634,9 +634,12 @@ export default function App() {
           <section id="intro" className="relative border-t border-white/10 py-20">
             <div className="mx-auto max-w-6xl px-4">
               <AnimatedSection>
-                <h2 className="section-title mb-12 text-2xl font-bold md:text-4xl">
-                  <span className="inline-block">El Proceso de <Glow>Armonización</Glow></span>
+                <h2 className="section-title mb-2 text-2xl font-bold md:text-4xl text-center" style={{ color: palette.accent }}>
+                  ¿Cómo Funciona?
                 </h2>
+                <h3 className="text-white text-lg md:text-2xl font-semibold text-center mb-10">
+                  el proceso de cada sesión
+                </h3>
               </AnimatedSection>
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {processSteps.map((step, index) => (
