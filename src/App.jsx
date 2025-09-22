@@ -106,9 +106,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const lastScrollRef = useRef(0);
-  const [headerHidden, setHeaderHidden] = useState(false);
-  const headerFreezeUntilRef = useRef(0);
+  // Header fijo sin ocultarse al hacer scroll
   const [contactPrefill, setContactPrefill] = useState({ mode: null, message: '' });
   // Acordeón Certificaciones + Lightbox de diplomas
   const [certsOpen, setCertsOpen] = useState(false);
@@ -255,17 +253,10 @@ export default function App() {
     };
   }, [sections.length]);
 
-  // Scroll handler para CTA móvil y header (ocultar al bajar, mostrar al subir)
+  // Scroll handler solo para CTA móvil (el header permanece fijo)
   useEffect(() => {
-    // Inicializar posición
-    lastScrollRef.current = window.scrollY || 0;
-
     const handleScroll = () => {
       const y = window.scrollY || 0;
-      const prevY = lastScrollRef.current || 0;
-      const dy = y - prevY;
-      const threshold = 8; // px para evitar ruido
-
       // CTA móvil
       const scrolledEnough = y > window.innerHeight * 0.8;
       const contactEl = document.getElementById('contact');
@@ -276,20 +267,6 @@ export default function App() {
         inContact = rect.top < window.innerHeight * 0.6;
       }
       setShowMobileCta(scrolledEnough && !inContact && !nearBottom && !menuOpen);
-      // Header hide/show con umbral de inicio (20% viewport) y ventana de freeze tras taps
-      const nearTop = y < 20;
-      const scrolledPastStart = y > window.innerHeight * 0.2;
-      const frozen = Date.now() < headerFreezeUntilRef.current;
-      if (menuOpen || nearTop || nearBottom || frozen || !scrolledPastStart) {
-        if (headerHidden) setHeaderHidden(false);
-      } else {
-        if (dy > threshold && !headerHidden) {
-          setHeaderHidden(true);
-        } else if (dy < -threshold && headerHidden) {
-          setHeaderHidden(false);
-        }
-      }
-      lastScrollRef.current = y;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -298,7 +275,7 @@ export default function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [menuOpen, headerHidden]);
+  }, [menuOpen]);
 
   // SOLO depende de menuOpen
   const handleNavClick = (e, targetId) => {
@@ -309,9 +286,6 @@ export default function App() {
       // Usamos scrollIntoView + CSS scroll-margin para compensar el header
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    // Forzamos visibilidad y congelamos 1.6s para evitar ocultación por micro scroll
-    setHeaderHidden(false);
-    headerFreezeUntilRef.current = Date.now() + 1600;
     if (menuOpen) {
       setMenuOpen(false);
       // Pequeño delay para evitar jank mientras cierra el drawer en móviles
@@ -491,7 +465,7 @@ export default function App() {
         <Starfield accentColor={palette.accent} />
         <SacredGeometryOverlay accent={palette.accent} />
         
-  <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md transition-transform duration-300 ${headerHidden ? '-translate-y-full' : 'translate-y-0'}`}>
+  <header ref={headerRef} className={"fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-md"}>
           <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-3">
             <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="flex items-center gap-3 transition-transform hover:scale-105">
               <Logo accent={palette.accent} />
