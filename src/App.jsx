@@ -86,14 +86,14 @@ function Glow({ children }) {
 
 // Componente principal de la página de aterrizaje para Coaching Cuántico
 export default function App() {
-  const sections = [
+  const sections = useMemo(() => ([
     { id: "home", label: "Inicio" },
     { id: "intro", label: "El Proceso" },
     { id: "about", label: "Quién soy" },
     { id: "pricing", label: "Paquetes" },
     { id: "usuarios", label: "Usuarios" },
     { id: "contact", label: "Contacto" },
-  ];
+  ]), []);
 
   const palette = {
     bgStart: "#120B33", // Darker Indigo
@@ -106,6 +106,9 @@ export default function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const lastScrollRef = useRef(0);
+  const idleTimerRef = useRef(null);
   const [contactPrefill, setContactPrefill] = useState({ mode: null, message: '' });
   // Acordeón Certificaciones + Lightbox de diplomas
   const [certsOpen, setCertsOpen] = useState(false);
@@ -229,31 +232,76 @@ export default function App() {
       const el = document.getElementById(section.id);
       if (el) observer.observe(el);
     });
-    
-    // Listener para el CTA móvil
-  const handleScroll = () => {
-    const scrolledEnough = window.scrollY > window.innerHeight * 0.8;
-    const contactEl = document.getElementById('contact');
-    const nearBottom = window.innerHeight + window.scrollY >= (document.body.scrollHeight - 200);
-    let inContact = false;
-    if (contactEl) {
-      const rect = contactEl.getBoundingClientRect();
-      // si la sección contacto se acerca al viewport
-      inContact = rect.top < window.innerHeight * 0.6;
-    }
-    setShowMobileCta(scrolledEnough && !inContact && !nearBottom && !menuOpen);
-  };
-    window.addEventListener('scroll', handleScroll);
 
     return () => {
         sections.forEach((section) => {
             const el = document.getElementById(section.id);
             if (el) observer.unobserve(el);
         });
-        window.removeEventListener('scroll', handleScroll);
     };
-  }, [sections, menuOpen]);
+  }, [sections.length]);
 
+  // Scroll handler separado para sticky header y CTA móvil
+  useEffect(() => {
+    // Inicializar posición
+    lastScrollRef.current = window.scrollY || 0;
+
+    const handleScroll = () => {
+      const y = window.scrollY || 0;
+
+      // CTA móvil
+      const scrolledEnough = y > window.innerHeight * 0.8;
+      const contactEl = document.getElementById('contact');
+      const nearBottom = window.innerHeight + y >= (document.body.scrollHeight - 200);
+      let inContact = false;
+      if (contactEl) {
+        const rect = contactEl.getBoundingClientRect();
+        inContact = rect.top < window.innerHeight * 0.6;
+      }
+      setShowMobileCta(scrolledEnough && !inContact && !nearBottom && !menuOpen);
+
+      // Smart sticky header
+      if (menuOpen) {
+        setHeaderHidden(false);
+        lastScrollRef.current = y;
+        return;
+      }
+
+      // Auto-reveal tras inactividad
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(() => {
+        // Reaparece si no está el menú abierto
+        if (!menuOpen) setHeaderHidden(false);
+      }, 1200);
+
+      const last = lastScrollRef.current || 0;
+      const delta = y - last;
+
+      // Lógica simple y directa
+      if (y < 50) {
+        // Siempre visible cerca del top
+        setHeaderHidden(false);
+      } else if (delta > 10) {
+        // Bajando con intención
+        setHeaderHidden(true);
+      } else if (delta < -5) {
+        // Subiendo
+        setHeaderHidden(false);
+      }
+
+      lastScrollRef.current = y;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [menuOpen]);
+
+  // SOLO depende de menuOpen
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
     const targetElement = document.getElementById(targetId);
@@ -447,7 +495,7 @@ export default function App() {
         <Starfield accentColor={palette.accent} />
         <SacredGeometryOverlay accent={palette.accent} />
         
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-black/20 backdrop-blur-md">
+  <header className={`sticky top-0 z-40 border-b border-white/10 bg-black/20 backdrop-blur-md transform transition-transform duration-300 ${headerHidden ? '-translate-y-full' : 'translate-y-0'}`}>
           <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-3">
             <a href="#home" onClick={(e) => handleNavClick(e, 'home')} className="flex items-center gap-3 transition-transform hover:scale-105">
               <Logo accent={palette.accent} />
@@ -751,12 +799,58 @@ export default function App() {
           <section id="pricing" className="relative border-t border-white/10 py-20">
             <div className="mx-auto max-w-6xl px-4">
               <AnimatedSection>
-                <h2 className="section-title mb-8 text-2xl font-bold md:text-4xl">Paquetes y Honorarios</h2>
+                <h2 className="section-title mb-8 text-2xl font-bold md:text-4xl">Paquetes y Sesiones</h2>
                 <p className="mx-auto max-w-2xl text-center text-white/80 mb-10 text-sm md:text-base">Elige el formato que mejor se adapte a tu proceso. Puedes empezar con una consulta breve para alinear expectativas y objetivos.</p>
               </AnimatedSection>
               {/* Mobile: horizontal scroll with snap; Desktop: 3-column grid */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:overflow-visible md:snap-none overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
-                <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
+                <style>{`
+                  .no-scrollbar::-webkit-scrollbar{display:none}
+                  @keyframes ccPulseGlow { 
+                    0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+                    50% { box-shadow: 0 0 22px ${palette.glow}; }
+                    100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+                  }
+                  @keyframes ccSheen { 
+                    0% { transform: translateX(-140%) skewX(-15deg); opacity: 0; }
+                    10% { opacity: 0.7; }
+                    100% { transform: translateX(160%) skewX(-15deg); opacity: 0; }
+                  }
+                  .reco-badge { 
+                    position: absolute; 
+                    top: -0.75rem; 
+                    right: 1rem; 
+                    border-radius: 9999px; 
+                    padding: 0.25rem 0.75rem; 
+                    font-weight: 700; 
+                    font-size: 0.75rem; 
+                    color: #0c0c0c; 
+                    letter-spacing: 0.01em;
+                    overflow: hidden;
+                  }
+                  .reco-badge::before {
+                    content: '';
+                    position: absolute;
+                    inset: -6px;
+                    border-radius: 9999px;
+                    background: radial-gradient(closest-side, ${palette.accent}55, transparent 70%);
+                    filter: blur(6px);
+                    z-index: -1;
+                  }
+                  .reco-badge-anim { animation: ccPulseGlow 3.2s ease-in-out infinite; }
+                  .reco-badge .sheen {
+                    position: absolute;
+                    top: 0; bottom: 0; left: 0;
+                    width: 40%;
+                    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+                    transform: skewX(-15deg);
+                    filter: blur(0.5px);
+                    animation: ccSheen 6s ease-in-out infinite;
+                  }
+                  @media (prefers-reduced-motion: reduce) {
+                    .reco-badge-anim, .reco-badge .sheen { animation: none; }
+                  }
+                `}</style>
                 {/* Plan 1 */}
                 <AnimatedSection>
                   <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-start leading-relaxed text-[13.5px] sm:text-sm md:text-base">
@@ -782,7 +876,10 @@ export default function App() {
                 {/* Plan 2 - Destacado */}
                 <AnimatedSection>
                   <article className="relative rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-md h-full flex flex-col ring-1 ring-white/10 md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-center leading-relaxed text-[13.5px] sm:text-sm md:text-base">
-                    <div className="absolute -top-3 right-4 rounded-full px-3 py-1 text-xs font-semibold text-black" style={{ background: palette.accent }}>Recomendado</div>
+                    <div className="reco-badge reco-badge-anim" style={{ background: palette.accent }}>
+                      <span className="relative z-10">Recomendado</span>
+                      <span className="sheen" aria-hidden="true" />
+                    </div>
                     <h3 className="text-xl font-semibold">Pack 3 sesiones</h3>
                     <div className="mt-2 flex-1">
                       <p className="text-white/80">Proceso de transformación con seguimiento para resultados sostenibles.</p>
@@ -1063,7 +1160,7 @@ function FlowerOfLife({ accent, size = 200, spin = true, duration = 24 }) {
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      className="h-72 w-72"
+      className="h-72 w-72 md:h-[36rem] md:w-[36rem]"
       fill="none"
       style={{ filter: "drop-shadow(0 0 12px rgba(203,161,53,0.6))" }}
     >

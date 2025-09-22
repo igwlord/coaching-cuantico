@@ -90,9 +90,6 @@ export default function GeometriasGallery({ accent }) {
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 rounded-b-xl">
-                      <h4 className="text-white font-semibold">{g.name}</h4>
-                    </div>
                   </div>
                 </div>
               }
