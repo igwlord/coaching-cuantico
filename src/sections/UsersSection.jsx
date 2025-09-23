@@ -4,6 +4,7 @@ import Accordion from '../components/Accordion';
 import GeometriasGallery from '../components/GeometriasGallery';
 import FrecuenciasList from '../components/FrecuenciasList';
 import ComandosList from '../components/ComandosList';
+import CristalesModal from '../components/CristalesModal';
 // import CodigosList from '../components/CodigosList';
 
 const STORAGE_KEY = 'usersAccessGranted';
@@ -88,7 +89,7 @@ function Consigna({ accent }) {
         <div>
           <h3 className="mb-2 text-xl font-semibold" style={{ color: accent }}>Investiga tu intuición</h3>
           <p className="text-white/90 max-w-3xl text-base md:text-lg">
-            Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong> y <strong style={{ color: accent }}>comandos</strong> para que continúes tu proceso. Elegí <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>lo que te llame</span> —eso que te atrae es lo que tu campo de energía <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>necesita ahora</span>.
+            Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong>, <strong style={{ color: accent }}>comandos</strong> y <strong style={{ color: accent }}>cristales</strong> para que continúes tu proceso. Elegí <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>lo que te llame</span> —eso que te atrae es lo que tu campo de energía <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>necesita ahora</span>.
           </p>
           <ul className="mt-3 grid gap-2 text-white/80 max-w-3xl">
             <li className="flex items-start gap-2">
@@ -109,6 +110,12 @@ function Consigna({ accent }) {
               </svg>
               Repetí los comandos en voz alta, con intención clara y respiración consciente.
             </li>
+            <li className="flex items-start gap-2">
+              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
+                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
+              </svg>
+              Elegí un cristal y, si podés conseguirlo, que te acompañe durante este período.
+            </li>
           </ul>
           <p className="mt-4 text-center text-white/90 text-base md:text-lg">
             Cerrá los ojos, respirá profundo y preguntate:
@@ -126,9 +133,10 @@ function AccordionsHub({ accent }) {
   const geoRef = useRef(null);
   const frecRef = useRef(null);
   const cmdRef = useRef(null);
-  const [openGeo, setOpenGeo] = useState(true);
+  const [openGeo, setOpenGeo] = useState(false); // cerrado por defecto
   const [openFrec, setOpenFrec] = useState(false);
   const [openCmd, setOpenCmd] = useState(false);
+  const [cristalesOpen, setCristalesOpen] = useState(false);
 
   // Expose small event bus on window to trigger from QuickActions
   useEffect(() => {
@@ -136,6 +144,7 @@ function AccordionsHub({ accent }) {
       openGeo: () => { setOpenGeo(true); setOpenFrec(false); setOpenCmd(false); geoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
       openFrec: () => { setOpenGeo(false); setOpenFrec(true); setOpenCmd(false); frecRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
       openCmd: () => { setOpenGeo(false); setOpenFrec(false); setOpenCmd(true); cmdRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      openCristales: () => { setCristalesOpen(true); },
     };
     window.__usersQuickActions = api;
     return () => { if (window.__usersQuickActions === api) delete window.__usersQuickActions; };
@@ -158,23 +167,38 @@ function AccordionsHub({ accent }) {
           <ComandosList accent={accent} />
         </Accordion>
       </div>
+      {/* Botón para abrir Cristales */}
+      <div className="pt-2">
+        <button
+          type="button"
+          onClick={() => setCristalesOpen(true)}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-left hover:bg-white/10 transition"
+        >
+          <span className="font-semibold" style={{ color: accent }}>Cristales</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <CristalesModal open={cristalesOpen} onClose={() => setCristalesOpen(false)} accent={accent} />
       {/* Sección Códigos de luz eliminada a pedido */}
     </div>
   );
 }
 
 function QuickActions({ accent }) {
-  const btn = 'inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm text-white/90 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30';
+  const base = 'inline-flex items-center justify-center gap-1 rounded-xl border border-white/15 bg-white/10 text-white/90 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition';
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openGeo?.()}>
+    <div className="mt-4 flex w-full flex-nowrap gap-2 overflow-x-auto pb-1 sm:overflow-visible sm:flex-wrap">
+      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openGeo?.()}>
         <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Geometría
       </button>
-      <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openFrec?.()}>
+      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openFrec?.()}>
         <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Frecuencias
       </button>
-      <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openCmd?.()}>
+      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openCmd?.()}>
         <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Comandos
+      </button>
+      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openCristales?.()}>
+        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Cristales
       </button>
     </div>
   );
