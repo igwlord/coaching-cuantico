@@ -49,8 +49,6 @@ export default function UsersSection({ accent }) {
             Acceso exclusivo para consultantes. Ingresa con el PIN que te compartí al finalizar tu sesión.
             <br />
             Aquí encontrarás ejercicios, ayudas y frecuencias para tu integración.
-            <br />
-            ¿Ya hiciste una sesión y no tenés el PIN? Escríbeme.
           </p>
           <PinGate accent={accent} onSuccess={onGranted} validPin={VALID_PIN} />
         </div>
