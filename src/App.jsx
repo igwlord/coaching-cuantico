@@ -451,6 +451,10 @@ export default function App() {
       {/* <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" /> */}
       <style>{`
         body { font-family: 'Inter', sans-serif; }
+        /* Ajuste: eliminar espacio excesivo sobre el hero en móviles compensando el padding global */
+        @media (max-width: 768px) {
+          #home { margin-top: calc(var(--cc-header-h, 0px) * -1); }
+        }
       `}</style>
       <div
         className="min-h-screen w-full text-white antialiased overflow-x-hidden"

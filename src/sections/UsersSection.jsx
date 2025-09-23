@@ -60,9 +60,9 @@ export default function UsersSection({ accent }) {
   return (
     <section id="usuarios" className="relative border-t border-white/10 py-20">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <h2 className="section-title text-2xl font-bold md:text-4xl" style={{ color: accent }}>Usuarios</h2>
-          <button type="button" onClick={onLogout} className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/15">Salir</button>
+        <div className="mb-6 flex items-center justify-center gap-3 relative">
+          <h2 className="section-title text-3xl md:text-4xl font-bold tracking-wide text-center" style={{ color: accent }}>Usuarios</h2>
+          <button type="button" onClick={onLogout} className="absolute right-0 top-1/2 -translate-y-1/2 rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-xs md:text-sm text-white/80 hover:bg-white/15">Salir</button>
         </div>
         {/* Consigna destacada */}
         <Consigna accent={accent} />
@@ -75,56 +75,34 @@ export default function UsersSection({ accent }) {
 function Consigna({ accent }) {
   return (
     <div className="mb-8 rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-5 shadow-[0_0_40px_-10px_rgba(212,175,55,0.35)]">
-      <div className="flex items-start gap-3">
-        <div
-          className="mt-1 hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full text-black shadow"
-          style={{ background: accent }}
-          aria-hidden
-        >
-          {/* Sparkles icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-            <path d="M11.48 3.499a.75.75 0 0 1 1.04 0l1.69 1.69a2.25 2.25 0 0 0 1.591.659l2.39.023a.75.75 0 0 1 .53 1.28l-1.7 1.7a2.25 2.25 0 0 0-.657 1.588l.023 2.391a.75.75 0 0 1-1.28.531l-1.7-1.7a2.25 2.25 0 0 0-1.589-.657l-2.39.023a.75.75 0 0 1-.531-1.281l1.7-1.699a2.25 2.25 0 0 0 .657-1.59l-.023-2.39a.75.75 0 0 1 .24-.54Z"/>
-          </svg>
-        </div>
-        <div>
-          <h3 className="mb-2 text-xl font-semibold" style={{ color: accent }}>Investiga tu intuición</h3>
-          <p className="text-white/90 max-w-3xl text-base md:text-lg">
-            Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong>, <strong style={{ color: accent }}>comandos</strong> y <strong style={{ color: accent }}>cristales</strong> para que continúes tu proceso. Elegí <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>lo que te llame</span> —eso que te atrae es lo que tu campo de energía <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>necesita ahora</span>.
-          </p>
-          <ul className="mt-3 grid gap-2 text-white/80 max-w-3xl">
-            <li className="flex items-start gap-2">
-              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
-                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
-              </svg>
-              Imprimí las imágenes y llevalas con vos: casa, trabajo, billetera, celu, bajo la almohada.
-            </li>
-            <li className="flex items-start gap-2">
-              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
-                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
-              </svg>
-              Escuchá frecuencias para dormir, meditar o acompañar momentos de calma.
-            </li>
-            <li className="flex items-start gap-2">
-              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
-                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
-              </svg>
-              Repetí los comandos en voz alta, con intención clara y respiración consciente.
-            </li>
-            <li className="flex items-start gap-2">
-              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
-                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
-              </svg>
-              Elegí un cristal y, si podés conseguirlo, que te acompañe durante este período.
-            </li>
-          </ul>
-          <p className="mt-4 text-center text-white/90 text-base md:text-lg">
-            Cerrá los ojos, respirá profundo y preguntate:
-            <br />
-            <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>¿con qué empiezo hoy?</span>
-          </p>
-          <QuickActions accent={accent} />
-        </div>
-      </div>
+      <h3 className="mb-4 text-center text-xl font-semibold md:text-2xl" style={{ color: accent }}>Investiga tu intuición</h3>
+      <p className="text-white/90 mx-auto max-w-3xl text-sm md:text-base">
+        Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong>, <strong style={{ color: accent }}>comandos</strong> y <strong style={{ color: accent }}>cristales</strong> para que continúes tu proceso. Elegí <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>lo que te llame</span> —eso que te atrae es lo que tu campo de energía <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>necesita ahora</span>.
+      </p>
+      <ul className="mt-4 mx-auto grid gap-2 text-white/80 max-w-3xl text-sm md:text-base">
+        <li className="flex items-start gap-2">
+          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
+          Imprimí las imágenes y llevalas con vos: casa, trabajo, billetera, celu, bajo la almohada.
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
+          Escuchá frecuencias para dormir, meditar o acompañar momentos de calma.
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
+          Repetí los comandos en voz alta, con intención clara y respiración consciente.
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
+          Elegí un cristal de la lista y si podés conseguirlo, él te acompañará durante los siguientes días posteriores a la sesión.
+        </li>
+      </ul>
+      <p className="mt-5 text-center text-white/90 text-sm md:text-lg">
+        Cerrá los ojos, respirá profundo y preguntate:
+        <br />
+        <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>¿con qué empiezo hoy?</span>
+      </p>
+      <QuickActions accent={accent} />
     </div>
   );
 }
@@ -185,21 +163,19 @@ function AccordionsHub({ accent }) {
 }
 
 function QuickActions({ accent }) {
-  const base = 'inline-flex items-center justify-center gap-1 rounded-xl border border-white/15 bg-white/10 text-white/90 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition';
+  const base = 'inline-flex items-center justify-center gap-1 rounded-xl border border-white/15 bg-white/10 text-white/90 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition shadow-sm';
   return (
-    <div className="mt-4 flex w-full flex-nowrap gap-2 overflow-x-auto pb-1 sm:overflow-visible sm:flex-wrap">
-      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openGeo?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Geometría
-      </button>
-      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openFrec?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Frecuencias
-      </button>
-      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openCmd?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Comandos
-      </button>
-      <button type="button" className={`${base} px-2 py-1.5 text-[11px] sm:text-sm sm:px-3`} onClick={() => window.__usersQuickActions?.openCristales?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Cristales
-      </button>
+    <div className="mt-4 flex w-full flex-wrap gap-2 justify-center">
+      {[
+        ['Geometría','openGeo'],
+        ['Frecuencias','openFrec'],
+        ['Comandos','openCmd'],
+        ['Cristales','openCristales'],
+      ].map(([label, key]) => (
+        <button key={key} type="button" className={`${base} px-3 py-1.5 text-[11px] sm:text-sm`} onClick={() => window.__usersQuickActions?.[key]?.()}>
+          <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> {label}
+        </button>
+      ))}
     </div>
   );
 }
