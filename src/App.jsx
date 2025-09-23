@@ -792,8 +792,8 @@ export default function App() {
                 <h2 className="section-title mb-8 text-2xl font-bold md:text-4xl">Paquetes y Sesiones</h2>
                 <p className="mx-auto max-w-2xl text-center text-white/80 mb-10 text-sm md:text-base">Elige el formato que mejor se adapte a tu proceso. Puedes empezar con una consulta breve para alinear expectativas y objetivos.</p>
               </AnimatedSection>
-              {/* Mobile: horizontal scroll with snap; Desktop: 3-column grid */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:overflow-visible md:snap-none overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+              {/* Grid simple sin scroll horizontal en móvil para evitar confusiones de gesto */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <style>{`
                   .no-scrollbar::-webkit-scrollbar{display:none}
                   @keyframes ccPulseGlow { 
@@ -843,7 +843,7 @@ export default function App() {
                 `}</style>
                 {/* Plan 1 */}
                 <AnimatedSection>
-                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-start leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col leading-relaxed text-[13.5px] sm:text-sm md:text-base">
                     <h3 className="text-xl font-semibold">Sesión única</h3>
                     <div className="mt-2 flex-1">
                       <p className="text-white/80">Armonización cuántica 1:1. Ideal para una necesidad puntual o primer acercamiento.</p>
@@ -865,7 +865,7 @@ export default function App() {
                 </AnimatedSection>
                 {/* Plan 2 - Destacado */}
                 <AnimatedSection>
-                  <article className="relative rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-md h-full flex flex-col ring-1 ring-white/10 md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-center leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                  <article className="relative rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-md h-full flex flex-col ring-1 ring-white/10 leading-relaxed text-[13.5px] sm:text-sm md:text-base">
                     <div className="reco-badge reco-badge-anim" style={{ background: palette.accent }}>
                       <span className="relative z-10">Recomendado</span>
                       <span className="sheen" aria-hidden="true" />
@@ -891,7 +891,7 @@ export default function App() {
                 </AnimatedSection>
                 {/* Plan 3 (reemplazo) */}
                 <AnimatedSection>
-                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col md:mx-0 mx-2 min-w-[86%] xs:min-w-[80%] sm:min-w-[70%] snap-end leading-relaxed text-[13.5px] sm:text-sm md:text-base">
+                  <article className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md h-full flex flex-col leading-relaxed text-[13.5px] sm:text-sm md:text-base">
                     <h3 className="text-xl font-semibold">Limpieza de espacios/negocios</h3>
                     <div className="mt-2 flex-1">
                       <p className="text-white/80">Armonización Cuántica para casas, negocios y terrenos. 100% online.</p>
@@ -1149,32 +1149,52 @@ function FlowerOfLife({ accent, size = 200, spin = true, duration = 24 }) {
   }
 
   return (
-    <svg
-      viewBox={`0 0 ${size} ${size}`}
-      className="h-72 w-72 md:h-[36rem] md:w-[36rem]"
-      fill="none"
-      style={{ filter: "drop-shadow(0 0 12px rgba(203,161,53,0.6))" }}
-    >
-      <g stroke={accent} strokeWidth="1.2">
-        <g transform={`rotate(0 ${cx} ${cy})`}>
-          {(!prefersReducedMotion && spin) && (
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from={`0 ${cx} ${cy}`}
-              to={`360 ${cx} ${cy}`}
-              dur={`${duration}s`}
-              repeatCount="indefinite"
-            />
-          )}
-          {centers.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r={R} />
-          ))}
-          {/* Outer ring */}
-          <circle cx={cx} cy={cy} r={3 * R} />
+    <div className="relative h-72 w-72 md:h-[36rem] md:w-[36rem]">
+      {/* Glow radial respirando (dorado suave) */}
+      <style>{`
+        @keyframes ccBreath {
+          0%, 100% { opacity: 0.18; transform: scale(0.92); }
+          50% { opacity: 0.38; transform: scale(1.06); }
+        }
+        @media (prefers-reduced-motion: reduce) { .cc-breath { animation: none !important; } }
+      `}</style>
+      <div
+        aria-hidden
+        className={`absolute inset-0 rounded-full ${prefersReducedMotion ? '' : 'cc-breath'}`}
+        style={{
+          background: `radial-gradient(circle, ${accent}55 0%, ${accent}22 42%, transparent 70%)`,
+          filter: 'blur(24px)',
+          animation: prefersReducedMotion ? undefined : 'ccBreath 5.6s ease-in-out infinite',
+          willChange: 'transform, opacity'
+        }}
+      />
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className="relative z-10 h-full w-full"
+        fill="none"
+        style={{ filter: "drop-shadow(0 0 12px rgba(203,161,53,0.6))" }}
+      >
+        <g stroke={accent} strokeWidth="1.2">
+          <g transform={`rotate(0 ${cx} ${cy})`}>
+            {(!prefersReducedMotion && spin) && (
+              <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from={`0 ${cx} ${cy}`}
+                to={`360 ${cx} ${cy}`}
+                dur={`${duration}s`}
+                repeatCount="indefinite"
+              />
+            )}
+            {centers.map((p, i) => (
+              <circle key={i} cx={p.x} cy={p.y} r={R} />
+            ))}
+            {/* Outer ring */}
+            <circle cx={cx} cy={cy} r={3 * R} />
+          </g>
         </g>
-      </g>
-    </svg>
+      </svg>
+    </div>
   );
 }
 
