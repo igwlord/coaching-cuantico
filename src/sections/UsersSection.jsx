@@ -46,7 +46,7 @@ export default function UsersSection({ accent }) {
             <span style={{ color: accent }}>Sección de Usuarios</span>
           </h2>
           <p className="text-white/80 mb-6">
-            Acceso exclusivo para consultantes. Ingresa con el PIN que te compartí al finalizar tu sesión.
+            Acceso exclusivo para consultantes. Ingresá con el PIN que te compartí al finalizar tu sesión.
             <br />
             Aquí encontrarás ejercicios, ayudas y frecuencias para tu integración.
           </p>
