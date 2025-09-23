@@ -45,7 +45,13 @@ export default function UsersSection({ accent }) {
           <h2 className="section-title mb-4 text-2xl font-bold md:text-4xl">
             <span style={{ color: accent }}>Sección de Usuarios</span>
           </h2>
-          <p className="text-white/80 mb-6">Acceso exclusivo para consultantes. Solo se puede ingresar luego que hagas una sesión. Aqui encontrarás ejercicios y algunas ayudas.</p>
+          <p className="text-white/80 mb-6">
+            Acceso exclusivo para consultantes. Ingresa con el PIN que te compartí al finalizar tu sesión.
+            <br />
+            Aquí encontrarás ejercicios, ayudas y frecuencias para tu integración.
+            <br />
+            ¿Ya hiciste una sesión y no tenés el PIN? Escríbeme.
+          </p>
           <PinGate accent={accent} onSuccess={onGranted} validPin={VALID_PIN} />
         </div>
       </section>
