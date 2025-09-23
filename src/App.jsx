@@ -932,6 +932,10 @@ export default function App() {
                       <dd className="mt-1 text-white/80">No. Ni necesitas experiencia previa. Solo tu intención y regalarte un rato para vos.</dd>
                     </div>
                     <div>
+                      <dt className="font-semibold">¿Qué significa Cuántico?</dt>
+                      <dd className="mt-1 text-white/80">Cuántico es todo lo que no podemos ver en lo físico. Reconocer la unión entre materia, energía y conciencia para generar armonía y transformación en nuestras vidas.</dd>
+                    </div>
+                    <div>
                       <dt className="font-semibold">¿Cuánto dura la sesión?</dt>
                       <dd className="mt-1 text-white/80">Entre 60 a 120 minutos. Los días siguientes te acompaño en tu proceso.</dd>
                     </div>
