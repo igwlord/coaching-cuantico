@@ -76,7 +76,7 @@ function Consigna({ accent }) {
     <div className="mb-8 rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-5 shadow-[0_0_40px_-10px_rgba(212,175,55,0.35)]">
       <div className="flex items-start gap-3">
         <div
-          className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-black shadow"
+          className="mt-1 hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full text-black shadow"
           style={{ background: accent }}
           aria-hidden
         >
@@ -88,15 +88,32 @@ function Consigna({ accent }) {
         <div>
           <h3 className="mb-2 text-xl font-semibold" style={{ color: accent }}>Investiga tu intuición</h3>
           <p className="text-white/90 max-w-3xl text-base md:text-lg">
-            Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong> y <strong style={{ color: accent }}>comandos</strong> para que continúes tu proceso. Elegí lo que te <em>llame</em> —eso que te atrae es lo que tu campo necesita ahora.
+            Este espacio reúne <strong style={{ color: accent }}>geometrías</strong>, <strong style={{ color: accent }}>frecuencias</strong> y <strong style={{ color: accent }}>comandos</strong> para que continúes tu proceso. Elegí <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>lo que te llame</span> —eso que te atrae es lo que tu campo de energía <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>necesita ahora</span>.
           </p>
           <ul className="mt-3 grid gap-2 text-white/80 max-w-3xl">
-            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full" style={{ background: accent }} /> Imprimí las imágenes y llevalas con vos: casa, trabajo, billetera, celu, bajo la almohada.</li>
-            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full" style={{ background: accent }} /> Escuchá frecuencias para dormir, meditar o acompañar momentos de calma.</li>
-            <li className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full" style={{ background: accent }} /> Repetí los comandos en voz alta, con intención clara y respiración consciente.</li>
+            <li className="flex items-start gap-2">
+              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
+                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
+              </svg>
+              Imprimí las imágenes y llevalas con vos: casa, trabajo, billetera, celu, bajo la almohada.
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
+                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
+              </svg>
+              Escuchá frecuencias para dormir, meditar o acompañar momentos de calma.
+            </li>
+            <li className="flex items-start gap-2">
+              <svg className="mt-1 h-3.5 w-3.5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ color: accent, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.5))' }} aria-hidden>
+                <path d="M12 2l2.6 6.9L22 10l-5.5 4.2L18.2 22 12 18.2 5.8 22l1.7-7.8L2 10l7.4-1.1L12 2z"/>
+              </svg>
+              Repetí los comandos en voz alta, con intención clara y respiración consciente.
+            </li>
           </ul>
-          <p className="mt-3 pl-3 border-l-2 text-white/90 italic" style={{ borderColor: accent }}>
-            Cerrá los ojos, respirá profundo y preguntate: <span style={{ color: accent }}>¿con qué empiezo hoy?</span>
+          <p className="mt-4 text-center text-white/90 text-base md:text-lg">
+            Cerrá los ojos, respirá profundo y preguntate:
+            <br />
+            <span className="font-semibold" style={{ color: accent, textShadow: '0 0 10px rgba(212,175,55,0.55)' }}>¿con qué empiezo hoy?</span>
           </p>
           <QuickActions accent={accent} />
         </div>
@@ -151,13 +168,13 @@ function QuickActions({ accent }) {
   return (
     <div className="mt-4 flex flex-wrap gap-2">
       <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openGeo?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Explorar Geometrías
+        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Geometría
       </button>
       <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openFrec?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Escuchar Frecuencias
+        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Frecuencias
       </button>
       <button type="button" className={btn} onClick={() => window.__usersQuickActions?.openCmd?.()}>
-        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Ver Comandos
+        <span className="h-2 w-2 rounded-full" style={{ background: accent }} /> Comandos
       </button>
     </div>
   );
