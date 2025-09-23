@@ -1,16 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function Accordion({ title, children, accent, defaultOpen = false }) {
-  const [open, setOpen] = useState(defaultOpen);
+export default function Accordion({ title, children, accent, defaultOpen = false, open: controlledOpen, onToggle }) {
+  const isControlled = controlledOpen !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
   const ref = useRef(null);
   const [h, setH] = useState(0);
   useEffect(() => { if (ref.current) setH(ref.current.scrollHeight); }, [children]);
+
+  const toggle = () => {
+    if (isControlled) {
+      onToggle?.(!controlledOpen);
+    } else {
+      setUncontrolledOpen(v => !v);
+    }
+  };
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5">
       <button
         type="button"
-        onClick={() => setOpen(v => !v)}
+        onClick={toggle}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/10 transition"
         aria-expanded={open}
       >

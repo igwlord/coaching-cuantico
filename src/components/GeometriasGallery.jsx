@@ -70,6 +70,7 @@ export default function GeometriasGallery({ accent }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {items.map((g) => {
         const imgSrc = g.src || `/images/Geometria/${g.file}`;
+        const isSmallDesc = ['dodecaedro', 'vector-equilibrio'].includes(g.slug);
         return (
           <article key={g.slug} className="group">
             <FlipCard
@@ -121,7 +122,9 @@ export default function GeometriasGallery({ accent }) {
                       </a>
                     </div>
                   </div>
-                  <p className="text-sm text-white/80 flex-1">{g.desc || 'Descripción disponible post-sesión.'}</p>
+                  <p className={`${isSmallDesc ? 'text-xs md:text-sm leading-snug' : 'text-sm leading-relaxed'} text-white/80 flex-1`}>
+                    {g.desc || 'Descripción disponible post-sesión.'}
+                  </p>
                 </div>
               }
             />
