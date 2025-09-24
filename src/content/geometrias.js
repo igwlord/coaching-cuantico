@@ -70,6 +70,36 @@ Uso: Encontrar armonía interna, equilibrio entre polaridades, centrarse en la n
 
 Visualización: Visualiza un vector equilibrio transparente con luz plateada en tu plexo. Respira y siente cómo todas las tensiones se disuelven en balance.`
   },
+  {
+    slug: 'octaedro',
+    name: 'Octaedro (Elemento Aire)',
+    file: 'octaedro.webp',
+    desc: `Significado: Representa el equilibrio entre dar y recibir. Asociado al aire y al corazón.
+
+Uso: Armonizar emociones, abrirse al amor incondicional y liberar tensiones internas.
+
+Visualización: Visualiza un octaedro verde esmeralda flotando en tu pecho. Con cada inhalación, se expande llenando de paz tu corazón.`
+  },
+  {
+    slug: 'hexaedro',
+    name: 'Hexaedro / Cubo (Elemento Tierra)',
+    file: 'hexaedro.webp',
+    desc: `Significado: Simboliza la estabilidad, la estructura y el sostén. Relacionado con el elemento tierra y el chakra raíz.
+
+Uso: Conexión con la tierra, enraizamiento, seguridad y concreción de proyectos.
+
+Visualización: Imagina un cubo de luz roja bajo tus pies, sólido y estable. Con cada exhalación, siente cómo tus raíces se extienden hacia el centro de la Tierra.`
+  },
+  {
+    slug: 'tetraedro',
+    name: 'Tetraedro (Elemento Fuego)',
+    file: 'tetraedro.webp',
+    desc: `Significado: Representa la energía del fuego, la voluntad y la transformación.
+
+Uso: Activar la fuerza vital, purificar lo viejo y potenciar la acción consciente.
+
+Visualización: Visualiza un tetraedro de luz dorada en tu plexo solar. Al inhalar, percibe cómo enciende tu energía interior y te llena de confianza.`
+  },
   // Vesica Piscis: pedido de remover esta tarjeta por ahora
 ];
 
