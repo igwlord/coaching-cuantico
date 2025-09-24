@@ -70,7 +70,6 @@ export default function GeometriasGallery({ accent }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {items.map((g) => {
         const imgSrc = g.src || `/images/Geometria/${g.file}`;
-        const isSmallDesc = ['dodecaedro', 'vector-equilibrio'].includes(g.slug);
         return (
           <article key={g.slug} className="group">
             <FlipCard
@@ -95,7 +94,7 @@ export default function GeometriasGallery({ accent }) {
                 </div>
               }
               back={
-                <div className="h-full w-full p-4 flex flex-col">
+                <div className="h-full w-full p-4 flex flex-col min-h-0">
                   {/* Header: título + descarga (móvil: icono | desktop: botón compacto) */}
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold pr-2 truncate" style={{ color: accent }}>{g.name}</h4>
@@ -122,9 +121,11 @@ export default function GeometriasGallery({ accent }) {
                       </a>
                     </div>
                   </div>
-                  <p className={`${isSmallDesc ? 'text-xs md:text-sm leading-snug' : 'text-sm leading-relaxed'} text-white/80 flex-1`}>
-                    {g.desc || 'Descripción disponible post-sesión.'}
-                  </p>
+                  <div className="text-[13px] md:text-sm leading-snug text-white/80 flex-1 overflow-y-auto pr-1">
+                    <p className="whitespace-pre-line">
+                      {g.desc || 'Descripción disponible post-sesión.'}
+                    </p>
+                  </div>
                 </div>
               }
             />
