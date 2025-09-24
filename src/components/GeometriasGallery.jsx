@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import FlipCard from './FlipCard';
 import geometrias from '../content/geometrias';
 
@@ -82,13 +82,7 @@ export default function GeometriasGallery({ accent }) {
                       Vista previa no disponible
                     </div>
                     <div className="relative aspect-square">
-                      <img
-                        src={imgSrc}
-                        alt={g.name}
-                        loading="lazy"
-                        className="absolute inset-0 h-full w-full object-contain object-center z-10"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
+                      <ImageWithFallback src={imgSrc} file={g.file} alt={g.name} />
                     </div>
                   </div>
                 </div>
@@ -159,5 +153,34 @@ export default function GeometriasGallery({ accent }) {
         );
       })}
     </div>
+  );
+}
+
+// Componente de imagen con fallback de rutas por si hay discrepancias de mayúsculas o espacios
+function ImageWithFallback({ src, file, alt }) {
+  const candidates = useMemo(() => {
+    const base = file || '';
+    const variants = new Set([
+      src,
+      `/images/Geometria/${base}`,
+      `/images/Geometria/${base.toLowerCase()}`,
+      `/images/Geometria/${encodeURIComponent(base)}`,
+      `/images/Geometria/${encodeURIComponent(base.toLowerCase())}`,
+    ]);
+    return Array.from(variants).filter(Boolean);
+  }, [src, file]);
+  const [idx, setIdx] = useState(0);
+  const handleError = useCallback(() => {
+    setIdx(i => (i + 1 < candidates.length ? i + 1 : i));
+  }, [candidates.length]);
+  return (
+    <img
+      src={candidates[idx]}
+      alt={alt}
+      loading="lazy"
+      className="absolute inset-0 h-full w-full object-contain object-center z-10"
+      onError={handleError}
+      decoding="async"
+    />
   );
 }
