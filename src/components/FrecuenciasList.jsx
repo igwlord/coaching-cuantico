@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback, memo, useRef } from 'react';
 import frecuencias from '../content/frecuencias';
+import { useAutoHeight } from '../hooks/useAutoHeight';
 
 // Hook reproductor simple basado en archivos locales /Frecuencias/<hz>.mp3
 function useFrequencyPlayer() {
@@ -36,7 +37,7 @@ function useFrequencyPlayer() {
   return { current, playing, play, stop };
 }
 
-export default function FrecuenciasList({ accent }) {
+function FrecuenciasListComponent({ accent }) {
   const player = useFrequencyPlayer();
   const [openId, setOpenId] = useState(null);
 
@@ -50,32 +51,20 @@ export default function FrecuenciasList({ accent }) {
     }, {});
   }, []);
 
-  const togglePlay = (f) => {
+  const togglePlay = useCallback((f) => {
     if (player.current?.hz === f.hz && player.playing) player.stop(); else player.play(f.hz, `${f.hz} Hz – ${f.title}`);
-  };
+  }, [player]);
 
   return (
     <div className="space-y-3">
       {frecuencias.map(f => {
         const isOpen = openId === f.hz;
-        const panelRef = useRef(null);
-        const [height, setHeight] = useState(0);
         const segments = (f.content || '').split(/\n\s*\n/);
         const visIndex = segments.findIndex(s => /^\s*Visualización:/i.test(s));
         const visRaw = visIndex >= 0 ? segments[visIndex] : null;
         const visText = visRaw ? visRaw.replace(/^\s*Visualización:\s*/i, '') : null;
         const pre = visIndex >= 0 ? segments.slice(0, visIndex) : segments;
-        useEffect(() => {
-          if (isOpen && panelRef.current) {
-            setHeight(panelRef.current.scrollHeight);
-            // Notifica al contenedor principal que cambió la altura
-            window.dispatchEvent(new CustomEvent('cc-inner-accordion-change'));
-          } else if (!isOpen) {
-            setHeight(0);
-            window.dispatchEvent(new CustomEvent('cc-inner-accordion-change'));
-          }
-        }, [isOpen]);
-        useEffect(() => { const onResize = () => { if (isOpen && panelRef.current) setHeight(panelRef.current.scrollHeight); }; window.addEventListener('resize', onResize); return () => window.removeEventListener('resize', onResize); }, [isOpen]);
+        const { ref, height } = useAutoHeight(isOpen);
         return (
           <div key={f.hz} className="rounded-xl border border-white/10 bg-white/5">
             <div className="flex items-center gap-3 p-3">
@@ -116,7 +105,7 @@ export default function FrecuenciasList({ accent }) {
               </button>
             </div>
             <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: height, opacity: isOpen ? 1 : 0.6 }}>
-              <div ref={panelRef} className="px-4 pb-4 pt-1 text-sm text-white/80 space-y-3 custom-scroll">
+              <div ref={ref} className="px-4 pb-4 pt-1 text-sm text-white/80 space-y-3 custom-scroll">
                 {pre.map((seg,i)=>(<p key={i} className="whitespace-pre-line leading-relaxed">{seg}</p>))}
                 {visText && (
                   <div className="pt-1">
@@ -178,3 +167,6 @@ export default function FrecuenciasList({ accent }) {
     </div>
   );
 }
+
+const FrecuenciasList = memo(FrecuenciasListComponent);
+export default FrecuenciasList;

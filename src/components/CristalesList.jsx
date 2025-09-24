@@ -1,32 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import cristales from '../content/cristales';
+import { useAutoHeight } from '../hooks/useAutoHeight';
 
-export default function CristalesList({ accent }) {
+function CristalesListComponent({ accent }) {
   const [openSlug, setOpenSlug] = useState(null);
-  const copy = async (c) => {
+  const copy = useCallback(async (c) => {
     const text = `${c.nombre}\n${c.descripcion}\n${c.cuerpo}\n${c.beneficios}\n${c.mensaje}`;
     try { await navigator.clipboard.writeText(text); } catch {}
-  };
+  }, []);
   return (
     <div className="space-y-3">
       {cristales.map(c => {
         const isOpen = openSlug === c.slug;
-        const panelRef = useRef(null);
-        const [height, setHeight] = useState(0);
-        useEffect(() => {
-          if (isOpen && panelRef.current) {
-            setHeight(panelRef.current.scrollHeight);
-            window.dispatchEvent(new CustomEvent('cc-inner-accordion-change'));
-          } else if (!isOpen) {
-            setHeight(0);
-            window.dispatchEvent(new CustomEvent('cc-inner-accordion-change'));
-          }
-        }, [isOpen]);
-        useEffect(() => {
-          const onResize = () => { if (isOpen && panelRef.current) setHeight(panelRef.current.scrollHeight); };
-          window.addEventListener('resize', onResize);
-          return () => window.removeEventListener('resize', onResize);
-        }, [isOpen]);
+        const { ref, height } = useAutoHeight(isOpen);
         return (
           <div key={c.slug} className="rounded-xl border border-white/10 bg-white/5">
             <button
@@ -39,7 +25,7 @@ export default function CristalesList({ accent }) {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: height, opacity: isOpen ? 1 : 0.6 }}>
-              <div ref={panelRef} className="px-4 pb-4 pt-1 text-sm text-white/80 space-y-2">
+              <div ref={ref} className="px-4 pb-4 pt-1 text-sm text-white/80 space-y-2">
                 <p><span className="font-medium text-white/90">Descripción:</span> {c.descripcion}</p>
                 <p className="text-xs"><span className="font-medium text-white/90">Cuerpo:</span> {c.cuerpo}</p>
                 <p className="text-xs"><span className="font-medium text-white/90">Beneficios:</span> {c.beneficios}</p>
@@ -56,3 +42,6 @@ export default function CristalesList({ accent }) {
     </div>
   );
 }
+
+const CristalesList = memo(CristalesListComponent);
+export default CristalesList;
