@@ -178,6 +178,12 @@ export default function App() {
 
   // Cerrar lightbox con Escape y bloquear scroll de fondo
   useEffect(() => {
+    // Exponer lightbox global para otros componentes (ej: GeometriasGallery)
+    window.__openLightbox = openLightbox;
+    return () => { if (window.__openLightbox === openLightbox) delete window.__openLightbox; };
+  }, [openLightbox]);
+
+  useEffect(() => {
     if (!lightbox.open) return;
     const onKey = (e) => { if (e.key === 'Escape') closeLightbox(); };
     window.addEventListener('keydown', onKey);

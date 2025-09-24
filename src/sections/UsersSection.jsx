@@ -4,7 +4,7 @@ import Accordion from '../components/Accordion';
 import GeometriasGallery from '../components/GeometriasGallery';
 import FrecuenciasList from '../components/FrecuenciasList';
 import ComandosList from '../components/ComandosList';
-import CristalesModal from '../components/CristalesModal';
+import CristalesList from '../components/CristalesList';
 // import CodigosList from '../components/CodigosList';
 
 const STORAGE_KEY = 'usersAccessGranted';
@@ -96,6 +96,10 @@ function Consigna({ accent }) {
           <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
           Elegí un cristal de la lista y si podés conseguirlo, él te acompañará durante los siguientes días posteriores a la sesión.
         </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-1 h-2.5 w-2.5 rounded-full" style={{ background: accent }} aria-hidden />
+          Tiempo recomendado del ejercicio: +7 días después de nuestra sesión.
+        </li>
       </ul>
       <p className="mt-5 text-center text-white/90 text-sm md:text-lg">
         Cerrá los ojos, respirá profundo y preguntate:
@@ -111,53 +115,52 @@ function AccordionsHub({ accent }) {
   const geoRef = useRef(null);
   const frecRef = useRef(null);
   const cmdRef = useRef(null);
+  const cristRef = useRef(null);
   const [openGeo, setOpenGeo] = useState(false); // cerrado por defecto
   const [openFrec, setOpenFrec] = useState(false);
   const [openCmd, setOpenCmd] = useState(false);
-  const [cristalesOpen, setCristalesOpen] = useState(false);
+  const [openCrist, setOpenCrist] = useState(false);
 
   // Expose small event bus on window to trigger from QuickActions
   useEffect(() => {
     const api = {
-      openGeo: () => { setOpenGeo(true); setOpenFrec(false); setOpenCmd(false); geoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-      openFrec: () => { setOpenGeo(false); setOpenFrec(true); setOpenCmd(false); frecRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-      openCmd: () => { setOpenGeo(false); setOpenFrec(false); setOpenCmd(true); cmdRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-      openCristales: () => { setCristalesOpen(true); },
+      openGeo: () => { setOpenGeo(true); setOpenFrec(false); setOpenCmd(false); setOpenCrist(false); geoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      openFrec: () => { setOpenGeo(false); setOpenFrec(true); setOpenCmd(false); setOpenCrist(false); frecRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      openCmd: () => { setOpenGeo(false); setOpenFrec(false); setOpenCmd(true); setOpenCrist(false); cmdRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      openCristales: () => { setOpenGeo(false); setOpenFrec(false); setOpenCmd(false); setOpenCrist(true); cristRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
     };
     window.__usersQuickActions = api;
     return () => { if (window.__usersQuickActions === api) delete window.__usersQuickActions; };
   }, []);
 
+  const handleToggle = (key) => {
+    setOpenGeo(prev => key==='geo' ? !prev : false);
+    setOpenFrec(prev => key==='frec' ? (key==='frec' ? !openFrec : false) : false);
+    setOpenCmd(prev => key==='cmd' ? !prev : false);
+    setOpenCrist(prev => key==='crist' ? !prev : false);
+  };
   return (
     <div className="space-y-4">
       <div ref={geoRef}>
-        <Accordion title={<span style={{ color: accent }}>Imágenes (Geometría Sagrada)</span>} accent={accent} open={openGeo} onToggle={setOpenGeo}>
+        <Accordion title={<span style={{ color: accent }}>Imágenes (Geometría Sagrada)</span>} accent={accent} open={openGeo} onToggle={() => handleToggle('geo')}>
           <GeometriasGallery accent={accent} />
         </Accordion>
       </div>
       <div ref={frecRef}>
-        <Accordion title={<span style={{ color: accent }}>Frecuencias</span>} accent={accent} open={openFrec} onToggle={setOpenFrec}>
+        <Accordion title={<span style={{ color: accent }}>Frecuencias</span>} accent={accent} open={openFrec} onToggle={() => handleToggle('frec')}>
           <FrecuenciasList accent={accent} />
         </Accordion>
       </div>
       <div ref={cmdRef}>
-        <Accordion title={<span style={{ color: accent }}>Comandos</span>} accent={accent} open={openCmd} onToggle={setOpenCmd}>
+        <Accordion title={<span style={{ color: accent }}>Comandos</span>} accent={accent} open={openCmd} onToggle={() => handleToggle('cmd')}>
           <ComandosList accent={accent} />
         </Accordion>
       </div>
-      {/* Botón para abrir Cristales */}
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={() => setCristalesOpen(true)}
-          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-left hover:bg-white/10 transition"
-        >
-          <span className="font-semibold" style={{ color: accent }}>Cristales</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
+      <div ref={cristRef}>
+        <Accordion title={<span style={{ color: accent }}>Cristales</span>} accent={accent} open={openCrist} onToggle={() => handleToggle('crist')}>
+          <CristalesList accent={accent} />
+        </Accordion>
       </div>
-      <CristalesModal open={cristalesOpen} onClose={() => setCristalesOpen(false)} accent={accent} />
-      {/* Sección Códigos de luz eliminada a pedido */}
     </div>
   );
 }

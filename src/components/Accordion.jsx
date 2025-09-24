@@ -6,7 +6,33 @@ export default function Accordion({ title, children, accent, defaultOpen = false
   const open = isControlled ? controlledOpen : uncontrolledOpen;
   const ref = useRef(null);
   const [h, setH] = useState(0);
-  useEffect(() => { if (ref.current) setH(ref.current.scrollHeight); }, [children]);
+
+  // Recalcula altura cuando cambia el contenido o su tamaño (expansión interna)
+  useEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+    const measure = () => setH(el.scrollHeight);
+    measure(); // inicial
+    let ro;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => measure());
+      ro.observe(el);
+    } else {
+      // fallback simple
+      const id = setInterval(measure, 500);
+      return () => clearInterval(id);
+    }
+    return () => { ro && ro.disconnect(); };
+  }, [children, open]);
+
+  // Forzar re-medición cuando paneles internos despachan evento
+  useEffect(() => {
+    const handler = () => {
+      if (ref.current) setH(ref.current.scrollHeight);
+    };
+    window.addEventListener('cc-inner-accordion-change', handler);
+    return () => window.removeEventListener('cc-inner-accordion-change', handler);
+  }, []);
 
   const toggle = () => {
     if (isControlled) {
@@ -27,7 +53,7 @@ export default function Accordion({ title, children, accent, defaultOpen = false
         <span className="font-semibold">{title}</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`${open ? 'rotate-180' : ''} transition-transform`}><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: open ? h : 0, opacity: open ? 1 : 0.6 }}>
+      <div className="overflow-hidden transition-[max-height,opacity] duration-300" style={{ maxHeight: open ? h : 0, opacity: open ? 1 : 0.6 }}>
         <div ref={ref} className="p-4">
           {children}
         </div>

@@ -82,7 +82,16 @@ export default function GeometriasGallery({ accent }) {
                       Vista previa no disponible
                     </div>
                     <div className="relative aspect-square">
-                      <ImageWithFallback src={imgSrc} file={g.file} alt={g.name} />
+                      <ImageWithFallback src={imgSrc} file={g.file} alt={g.name} accent={accent} />
+                      {/* Botón zoom */}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); window.__openLightbox?.(imgSrc, g.name); }}
+                        aria-label={`Ver ${g.name} en grande`}
+                        className="absolute top-2 right-2 z-20 rounded-lg bg-black/40 backdrop-blur-sm p-1.5 text-white/80 hover:text-white hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 15v6h-6"/><path d="M3 9V3h6"/></svg>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -157,7 +166,7 @@ export default function GeometriasGallery({ accent }) {
 }
 
 // Componente de imagen con fallback de rutas por si hay discrepancias de mayúsculas o espacios
-function ImageWithFallback({ src, file, alt }) {
+function ImageWithFallback({ src, file, alt, accent }) {
   const candidates = useMemo(() => {
     const base = file || '';
     const variants = new Set([
@@ -170,17 +179,31 @@ function ImageWithFallback({ src, file, alt }) {
     return Array.from(variants).filter(Boolean);
   }, [src, file]);
   const [idx, setIdx] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const handleError = useCallback(() => {
     setIdx(i => (i + 1 < candidates.length ? i + 1 : i));
   }, [candidates.length]);
+  const handleLoad = () => setLoaded(true);
+  const sizes = '(max-width: 640px) 160px, (max-width: 1024px) 240px, 300px';
+  const current = candidates[idx];
   return (
-    <img
-      src={candidates[idx]}
-      alt={alt}
-      loading="lazy"
-      className="absolute inset-0 h-full w-full object-contain object-center z-10"
-      onError={handleError}
-      decoding="async"
-    />
+    <div className="absolute inset-0">
+      {!loaded && (
+        <div className="absolute inset-0 overflow-hidden rounded-lg">
+          <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/10 via-white/5 to-white/0" />
+          <div className="absolute inset-0 opacity-40" style={{ background: `radial-gradient(circle at 50% 40%, ${accent}22, transparent 70%)` }} />
+        </div>
+      )}
+      <img
+        src={current}
+        alt={alt}
+        loading="lazy"
+        sizes={sizes}
+        className={`absolute inset-0 h-full w-full object-contain object-center z-10 transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        onError={handleError}
+        onLoad={handleLoad}
+        decoding="async"
+      />
+    </div>
   );
 }
