@@ -121,10 +121,36 @@ export default function GeometriasGallery({ accent }) {
                       </a>
                     </div>
                   </div>
-                  <div className="text-[13px] md:text-sm leading-snug text-white/80 flex-1 overflow-y-auto pr-1">
-                    <p className="whitespace-pre-line">
-                      {g.desc || 'Descripción disponible post-sesión.'}
-                    </p>
+                  <div className="text-[13px] md:text-sm leading-snug text-white/80 flex-1 overflow-y-auto pr-1 space-y-3">
+                    {(() => {
+                      const raw = g.desc || 'Descripción disponible post-sesión.';
+                      // Segmentos separados por línea en blanco
+                      const segments = raw.split(/\n\s*\n/);
+                      const visIndex = segments.findIndex(s => /^\s*Visualización:/i.test(s));
+                      const pre = visIndex >= 0 ? segments.slice(0, visIndex) : segments;
+                      const visSeg = visIndex >= 0 ? segments[visIndex] : null;
+                      const visText = visSeg ? visSeg.replace(/^\s*Visualización:\s*/i, '') : null;
+                      return (
+                        <>
+                          {pre.map((seg, i) => (
+                            <p key={i} className="whitespace-pre-line">
+                              {seg}
+                            </p>
+                          ))}
+                          {visText && (
+                            <div className="pt-1">
+                              <p className="font-semibold text-white/90 mb-1" style={{ color: accent }}>Visualización</p>
+                              <blockquote
+                                className="text-[12px] md:text-[13px] leading-relaxed font-medium italic rounded-lg bg-black/30 p-3 border border-white/10 shadow-inner"
+                                style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.05), 0 0 22px -6px rgba(212,175,55,0.4)', color: accent, textShadow: '0 0 8px rgba(212,175,55,0.45)' }}
+                              >
+                                {visText}
+                              </blockquote>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               }
