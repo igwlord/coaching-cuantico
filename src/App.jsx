@@ -1005,9 +1005,19 @@ export default function App() {
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 overflow-hidden">
             <div className="flex min-w-0 items-center gap-2">
               <Logo accent={palette.accent} small />
-              <span className="text-xs whitespace-nowrap truncate">
-                <span className="hidden sm:inline">© {new Date().getFullYear()} Coaching Cuántico — Guido Di Pietro</span>
-                <span className="sm:hidden">© {new Date().getFullYear()} Coaching Cuántico — G. Di Pietro</span>
+              <span className="text-xs whitespace-nowrap truncate flex items-center gap-2">
+                <span className="hidden sm:inline">© {new Date().getFullYear()} Coaching Cuántico —</span>
+                <span className="sm:hidden">© {new Date().getFullYear()} Coaching Cuántico —</span>
+                <a
+                  href="https://www.instagram.com/coaching.cuantico.ig/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram Coaching Cuántico"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+                  title="Instagram"
+                >
+                  <IGLogo color={palette.accent} size={18} />
+                </a>
               </span>
             </div>
             {/* Botón de volver arriba removido a pedido */}
@@ -1071,6 +1081,23 @@ function Logo({ accent, small = false }) {
       </span>
       <span className={small ? "text-sm font-semibold" : "text-lg font-semibold"}>CC</span>
     </div>
+  );
+}
+
+function IGLogo({ size = 18, color = '#fff' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      aria-hidden
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" ry="5" stroke={color} strokeWidth="1.5"/>
+      <circle cx="12" cy="12" r="4.2" stroke={color} strokeWidth="1.5"/>
+      <circle cx="17.3" cy="6.7" r="1.2" fill={color} />
+    </svg>
   );
 }
 
@@ -1431,6 +1458,16 @@ function ContactForm({ accent, prefill }) {
           className={`rounded-xl px-5 py-3 font-semibold text-black transition-all duration-300 ${isFormValid ? 'opacity-100 cursor-pointer hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}`} 
           style={{ background: accent, boxShadow: `0 0 18px rgba(203,161,53,0.6)` }}>
           Enviar por WhatsApp
+        </a>
+        <a
+          href="https://www.instagram.com/coaching.cuantico.ig/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram Coaching Cuántico"
+          className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-3 text-white/80 hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          title="Instagram"
+        >
+          <IGLogo color={accent} size={18} />
         </a>
       </div>
     </form>
